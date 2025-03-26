@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chi-Square Goodness-of-Fit Test Simulator</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .input-section {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 5px;
+        }
+        .plot-section {
+            background: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0,0,0,0.1);
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 10px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 10px 0;
+        }
+        button:hover {
+            background: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>Chi-Square Goodness-of-Fit Test Simulator</h1>
+    
+    <div class="container">
+        <div class="input-section">
+            <h2>Data Input</h2>
+            <table id="dataTable">
+                <tr>
+                    <th>Income Bracket</th>
+                    <th>Expected Proportion</th>
+                    <th>Observed Count</th>
+                </tr>
+                <tr>
+                    <td>High</td>
+                    <td><input type="number" step="0.001" value="0.452" id="prop1"></td>
+                    <td><input type="number" id="obs1"></td>
+                </tr>
+                <tr>
+                    <td>Medium</td>
+                    <td><input type="number" step="0.001" value="0.292" id="prop2"></td>
+                    <td><input type="number" id="obs2"></td>
+                </tr>
+                <tr>
+                    <td>Low</td>
+                    <td><input type="number" step="0.001" value="0.256" id="prop3"></td>
+                    <td><input type="number" id="obs3"></td>
+                </tr>
+            </table>
+
+            <div>
+                <label for="sampleSize">Sample Size:</label>
+                <input type="number" id="sampleSize" value="40">
+                
+                <label for="numSimulations">Number of Simulations:</label>
+                <input type="number" id="numSimulations" value="1000">
+            </div>
+
+            <button onclick="runSimulation()">Run Simulation</button>
+
+            <div id="results">
+                <h3>Results:</h3>
+                <p id="observedChiSquare"></p>
+                <p id="pValue"></p>
+            </div>
+        </div>
+
+        <div class="plot-section">
+            <div id="histogram"></div>
+        </div>
+    </div>
+
+    <script>
+        function calculateChiSquare(observed, expected) {
+            return observed.reduce((sum, obs, i) => {
+                return sum + Math.pow(obs - expected[i], 2) / expected[i];
+            }, 0);
+        }
+
+        function generateSample(proportions, sampleSize) {
+            const sample = new Array(proportions.length).fill(0);
+            for (let i = 0; i < sampleSize; i++) {
+                let rand = Math.random();
+                let cumSum = 0;
+                for (let j = 0; j < proportions.length; j++) {
+                    cumSum += proportions[j];
+                    if (rand <= cumSum) {
+                        sample[j]++;
+                        break;
+                    }
+                }
+            }
+            return sample;
+        }
+
+        function runSimulation() {
+            // Get input values
+            const proportions = [
+                parseFloat(document.getElementById('prop1').value),
+                parseFloat(document.getElementById('prop2').value),
+                parseFloat(document.getElementById('prop3').value)
+            ];
+            
+            const observed = [
+                parseInt(document.getElementById('obs1').value),
+                parseInt(document.getElementById('obs2').value),
+                parseInt(document.getElementById('obs3').value)
+            ];
+
+            const sampleSize = parseInt(document.getElementById('sampleSize').value);
+            const numSimulations = parseInt(document.getElementById('numSimulations').value);
+
+            // Calculate expected counts
+            const expected = proportions.map(p => p * sampleSize);
+            
+            // Calculate observed chi-square
+            const observedChiSquare = calculateChiSquare(observed, expected);
+            
+            // Run simulations
+            const chiSquareStats = [];
+            for (let i = 0; i < numSimulations; i++) {
+                const sample = generateSample(proportions, sampleSize);
+                const chiSquare = calculateChiSquare(sample, expected);
+                chiSquareStats.push(chiSquare);
+            }
+
+            // Calculate p-value
+            const pValue = chiSquareStats.filter(x => x >= observedChiSquare).length / numSimulations;
+
+            // Update results
+            document.getElementById('observedChiSquare').textContent = 
+                `Observed Chi-Square Statistic: ${observedChiSquare.toFixed(3)}`;
+            document.getElementById('pValue').textContent = 
+                `Simulated P-value: ${pValue.toFixed(3)} (${Math.round(pValue * numSimulations)} out of ${numSimulations})`;
+
+            // Create histogram
+            const trace = {
+                x: chiSquareStats,
+                type: 'histogram',
+                name: 'Simulated Chi-Square Statistics',
+                opacity: 0.75
+            };
+
+            const layout = {
+                title: 'Distribution of Simulated Chi-Square Statistics',
+                xaxis: { title: 'Chi-Square Statistic' },
+                yaxis: { title: 'Frequency' },
+                shapes: [{
+                    type: 'line',
+                    x0: observedChiSquare,
+                    x1: observedChiSquare,
+                    y0: 0,
+                    y1: 1,
+                    yref: 'paper',
+                    line: {
+                        color: 'red',
+                        width: 2,
+                        dash: 'dash'
+                    }
+                }]
+            };
+
+            Plotly.newPlot('histogram', [trace], layout);
+        }
+    </script>
+</body>
+</html> 
