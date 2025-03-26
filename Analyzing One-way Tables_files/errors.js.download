@@ -1,0 +1,23 @@
+function showAlert(message){
+	document.getElementById("alert").style.display="";
+	document.getElementById("alertText").innerHTML = message;
+	document.getElementById("alert").setAttribute("role", "alert");
+	//document.getElementById("alert").setAttribute("aria-modal", "true");
+}
+
+function showDescription(message){
+	document.getElementById("alertDes").style.display="";
+	document.getElementById("alertDesText").innerHTML = message;
+	document.getElementById("alertDes").setAttribute("role", "alert");
+	//document.getElementById("alert").setAttribute("aria-modal", "true");
+}
+
+function hideAlert(){
+	document.getElementById("alert").setAttribute("role", "");
+	document.getElementById("alert").style.display="none";
+}
+
+function hideDescription(){
+	document.getElementById("alertDes").setAttribute("role", "");
+	document.getElementById("alertDes").style.display="none";
+}

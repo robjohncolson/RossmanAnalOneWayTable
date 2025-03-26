@@ -1,0 +1,3861 @@
+<!DOCTYPE html>
+<!-- saved from url=(0050)http://rossmanchance.com/applets/2021/gof/GOF.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" href="./Analyzing One-way Tables_files/jquery-ui.css">
+<script src="./Analyzing One-way Tables_files/jquery-1.9.1.js.download"></script>
+<script src="./Analyzing One-way Tables_files/jquery-ui.js.download"></script>
+<script src="./Analyzing One-way Tables_files/plotly-latest.min.js.download"></script><style id="plotly.js-style-global"></style>
+<link rel="stylesheet" href="./Analyzing One-way Tables_files/rcapplets.css">
+
+
+<script src="./Analyzing One-way Tables_files/errors.js.download"></script>
+
+<script type="text/javascript">
+function onChangeSelectData(){
+	retrieveData(bc$("selectData").value);
+	bc$("btnUseTable").style = "background-color: #4CAF50";
+	}
+	
+function retrieveData(urlName){
+	$.ajax({
+	  url: urlName,
+	  success: function (data) {
+		bc$("dataText").value = data;
+	  },
+	  dataType: "text"
+	});
+
+}
+</script>
+
+<script>
+var g_usingExCanvas = false;
+ 
+
+// Title: Chi squared applet with shuffling of response values.
+// Authors: Beth and Frank Chance.
+// Except where otherwise noted, copyright (c) 2012 Beth and Frank Chance.
+// Duplication without the written permission of Beth and Frank Chance prohibited by federal law.
+
+// global variables
+
+var g_about = "Version 42a.\n\nExcept where otherwise noted, copyright (c) 2012-2016 Beth and Frank Chance. Duplication without the written permission of Beth and Frank Chance prohibited by federal law."
+var g_fillBlue = "#1e90ff";
+var g_fillGreen = "#228b22";
+
+var g_language = 0;					//Default = English
+
+// Initial shuffle data observations.
+// var g_initDataText = "Year\tGrade\n1st\tFail\n1st\tFail\n2nd\tPass\n3rd\tFail\n2nd\tPass\n3rd\tFail\n2nd\tPass\n1st\tFail\n2nd\tFail\n3rd\tPass\n2nd\tFail\n3rd\tPass\n1st\tFail\n2nd\tFail\n1st\tPass\n";
+var g_init = true;				// Is going to keep track of whether the applet is just opening
+var g_initDataText= "Colors\nRed\nRed\nRed\nBlue\nBlue\nBlue\nBlue\nGreen\nGreen\nBrown";
+var g_initTallyText="Colors\tCount\nRed\t4\nBlue\t5\nBrown\t\3\nGreen\t1\n";
+//var g_initDataText = "Default\tChoice\nopt-in\tdonor\nopt-in\tdonor\nopt-in\tdonor\nopt-in\tdonor\nopt-in\tdonor\nopt-in\tdonor\nopt-in\tdonor\nopt-in\tdonor\nopt-in\tdonor\nopt-in\tdonor\nopt-in\tdonor\nopt-in\tdonor\nopt-in\tdonor\nopt-in\tdonor\nopt-in\tdonor\nopt-in\tdonor\nopt-in\tdonor\nopt-in\tdonor\nopt-in\tdonor\nopt-in\tdonor\nopt-in\tdonor\nopt-in\tdonor\nopt-in\tdonor\nopt-out\tdonor\nopt-out\tdonor\nopt-out\tdonor\nopt-out\tdonor\nopt-out\tdonor\nopt-out\tdonor\nopt-out\tdonor\nopt-out\tdonor\nopt-out\tdonor\nopt-out\tdonor\nopt-out\tdonor\nopt-out\tdonor\nopt-out\tdonor\nopt-out\tdonor\nopt-out\tdonor\nopt-out\tdonor\nopt-out\tdonor\nopt-out\tdonor\nopt-out\tdonor\nopt-out\tdonor\nopt-out\tdonor\nopt-out\tdonor\nopt-out\tdonor\nopt-out\tdonor\nopt-out\tdonor\nopt-out\tdonor\nopt-out\tdonor\nopt-out\tdonor\nopt-out\tdonor\nopt-out\tdonor\nopt-out\tdonor\nopt-out\tdonor\nopt-out\tdonor\nopt-out\tdonor\nopt-out\tdonor\nopt-out\tdonor\nopt-out\tdonor\nopt-out\tdonor\nopt-out\tdonor\nopt-out\tdonor\nopt-out\tdonor\nneutral\tdonor\nneutral\tdonor\nneutral\tdonor\nneutral\tdonor\nneutral\tdonor\nneutral\tdonor\nneutral\tdonor\nneutral\tdonor\nneutral\tdonor\nneutral\tdonor\nneutral\tdonor\nneutral\tdonor\nneutral\tdonor\nneutral\tdonor\nneutral\tdonor\nneutral\tdonor\nneutral\tdonor\nneutral\tdonor\nneutral\tdonor\nneutral\tdonor\nneutral\tdonor\nneutral\tdonor\nneutral\tdonor\nneutral\tdonor\nneutral\tdonor\nneutral\tdonor\nneutral\tdonor\nneutral\tdonor\nneutral\tdonor\nneutral\tdonor\nneutral\tdonor\nneutral\tdonor\nneutral\tdonor\nneutral\tdonor\nneutral\tdonor\nneutral\tdonor\nneutral\tdonor\nneutral\tdonor\nneutral\tdonor\nneutral\tdonor\nneutral\tdonor\nneutral\tdonor\nneutral\tdonor\nneutral\tdonor\nopt-in\tnot\nopt-in\tnot\nopt-in\tnot\nopt-in\tnot\nopt-in\tnot\nopt-in\tnot\nopt-in\tnot\nopt-in\tnot\nopt-in\tnot\nopt-in\tnot\nopt-in\tnot\nopt-in\tnot\nopt-in\tnot\nopt-in\tnot\nopt-in\tnot\nopt-in\tnot\nopt-in\tnot\nopt-in\tnot\nopt-in\tnot\nopt-in\tnot\nopt-in\tnot\nopt-in\tnot\nopt-in\tnot\nopt-in\tnot\nopt-in\tnot\nopt-in\tnot\nopt-in\tnot\nopt-in\tnot\nopt-in\tnot\nopt-in\tnot\nopt-in\tnot\nopt-in\tnot\nopt-out\tnot\nopt-out\tnot\nopt-out\tnot\nopt-out\tnot\nopt-out\tnot\nopt-out\tnot\nopt-out\tnot\nopt-out\tnot\nopt-out\tnot\nneutral\tnot\nneutral\tnot\nneutral\tnot\nneutral\tnot\nneutral\tnot\nneutral\tnot\nneutral\tnot\nneutral\tnot\nneutral\tnot\nneutral\tnot\nneutral\tnot\nneutral\tnot";
+//var g_2x2DataText = "Group\tOutcome\ndolphin\timprove\ndolphin\timprove\ndolphin\timprove\ndolphin\timprove\ndolphin\timprove\ndolphin\timprove\ndolphin\timprove\ndolphin\timprove\ndolphin\timprove\ndolphin\timprove\ncontrol\timprove\ncontrol\timprove\ncontrol\timprove\ndolphin\tnot\ndolphin\tnot\ndolphin\tnot\ndolphin\tnot\ndolphin\tnot\ncontrol\tnot\ncontrol\tnot\ncontrol\tnot\ncontrol\tnot\ncontrol\tnot\ncontrol\tnot\ncontrol\tnot\ncontrol\tnot\ncontrol\tnot\ncontrol\tnot\ncontrol\tnot\ncontrol\tnot\n";
+var g_countSamples = false;
+var g_inputIsExplanatoryResponse = true;// Default is X(explanatory), Y(response). If false, then input is Y,X.
+var g_lastUseDataText = "";			// Last "use data" text. Used by "revert" button.
+var g_explanatoryTitle = "Variable"; // Title for explanatory variable, e.g. Treatment
+var g_responseTitle = "Count";	// Title for response variable, e.g. Survived
+//var g_FEToutputText = "";
+var g_numLevels = 0;				// Number of unique explanatory values seen so far.
+var g_level = new Array();			// Master list of unique explanatory values. [0, g_numLevels).
+var g_level_orig = new Array();		// When using table entry, want to allow for empty categories
+var g_explanatory = new Array();	// Observed explanatory values (e.g. treatments). [0, g_numObs).
+var g_numOutcomes = 0;				// Number of unique response values seen so far.
+var g_outcome = new Array();		// Master list of unique response values. [0, g_numOutcomes).
+var g_response = new Array();		// Observed response values. [0, g_numObs).
+//var g_reportingOutcome = 0;			// The outcome we are reporting on (sum of differences, etc).
+var g_obsX = new Array();			// g_explanatory (categorical) mapped into integer level. [0, g_numObs).
+var g_obsY = new Array();			// g_response (categorical) mapped into integer outcomes. [0, g_numObs).
+var g_shuffleIndex = null; 			// Initially, g_shuffleIndex[i] = i, e.g. no scrambling. Scrambling randomizes the indexes. 
+									// So we get the original Y value in g_obsY[i]. Or we can get the shuffled Y value by taking
+									// g_obsY[g_shuffleIndex[i]]. [0, g_numObs).
+var g_noShuffleIndex = null;		// g_noShuffleIndex[i] = i.
+var g_isShuffled = false;			// Has data been shuffled?
+var g_obsSampleX = new Array();
+var g_obsSampleXorig = new Array();			
+var g_shuffleCount = 0;				// Number of completed shuffles. Reset by useData().
+var g_shuffleStats = new Array();	// Array of stats for each successive shuffle. [0, g_shuffleCount).
+var g_shuffleStatsSelectedIndex = null;	// If user selects a point in histogram, then g_shuffleStatsSelectedIndex is index of selected shuffle.
+var g_numObs = 0;					// Number of observations.
+var g_delayMilliseconds = 10;		// Reasonable animation delay
+var g_animationCount = 0;			// Counter for animation, so we avoid overlapping animations.
+var g_lastGetShuffleStats = null;
+var g_savedGetShuffleStats = null;
+var g_propValues = new Array();
+var g_altValues = new Array();
+// Language-related globals.
+var t_title=["Analyzing One-way Tables", "El An&aacute;lisis de las tabla"];
+var t_EnterData = ["Paste data or table below:", "Introducir datos "];
+var t_SampleData = ["Sample Data ", "Datos de las muestras "];
+var t_explanatory = ["variable", "variable"];
+var t_response = ["count", "cuenta"];
+var t_usedata = ["Use Data",  "Utiliza los datos"];
+var t_usetable = ["Use Table", "Utiliza la tabla"];
+var t_reset = ["Clear", "Reajusta"];
+var t_ShowTable = ["Show Table", "Muestra la table"];
+var t_statistic = ["Statistic:", "Estad&iacute;stica:"];
+//var t_diff = ["Difference in proportions", "Diferencia en proporciones"];
+//var t_rr = ["Relative risk", "Riesgo relative"];
+//var t_lnrelrisk = ["Ln relative risk", "Ln riesgo relative"];
+var t_Xcount =["Cell 1 Count", "La Cuenta"];
+var t_count =["Count", "Enumera"];
+var t_maxmin = ["Max - Min", "M&aacute;x - Min"];
+var t_output = ["Show &chi;&#0178 output", "Muestra &chi;&#0178 resultados"];
+var t_about = ["About", "Sobre"];
+var t_showPrevious= ["Show previous", "Mostrar anterior"];
+var t_success = ["Success", "&Eacute;xito"];
+var t_successPlain = ["Success", "Exito"];
+var t_failure = ["Failure", "Fracaso"];
+var t_observed = ["Observed", "Observado"];
+var t_ShowShuffle = ["Show Sampling Options", "Muestra las opciones"];
+var t_NumShuffles = ["Number of Samples", "N&uacute;mero de muestras"];
+var t_shuffle = ["Sample", "Muestra"];
+var t_TotalShuffles = ["Total samples", "N&uacute;mero total de muestras"];
+var t_mean = ["Mean = ", "Promedio = "];
+var t_SD = ["SD = ", "DE = "];
+var t_countButton = ["Count", "Enumera"];
+var t_MostRecent = ["Most Recent", "M&aacute;s reciente"];
+var t_shuffled = ["Sampled", "Barajado"];
+var t_TheoryBased = ["theory-based", "de la teo&oacute;ia"];
+var t_MostRecentShuffle = ["Most Recent Sample", "La muestra m&aacute;s reciente"];
+var t_table = ["Data", "Datos"];
+var t_cards = ["Cards", "Cartas"];
+var t_plot = ["Plot", "Trama"];
+var t_MostRecentTable = ["Most Recent Counts", "La tabla m&aacute;s reciente"];
+var t_CountSamples = ["Count Samples", "Contar Muestras"];
+var t_evrv = ["(Explanatory, Response}", "(Explicative, Respuesta)"];
+var t_cibox = ["95% CI(s) for difference in proportions", "95% CI(s) para la diferencia de proporciones"];
+var t_overlay = ["Overlay Chi-squared distribution", "Superponer la distribuci&oacute;n de Chi-squared"];
+var normal_overlay = ["Overlay normal distribution", "Superponer la distribuci&oacute;n de Normal"];
+var t_group = ["Group", "Grupo"];
+var g_treatmentText = t_group[g_language] + "A";		// Abbreviation for treatment level when converting 2x2 input into text input
+var g_controlText = t_group[g_language] + "B";
+var g_successText = t_success[g_language];		// Text for success when converting 2x2 input into text input
+var g_failureText = t_failure[g_language];		// Text for failure when converting 2x2 input into text input
+var t_percentage = ["Percentage", "Porcentaje"];
+var t_GroupA = ["GroupA", "GrupoA"];
+var t_GroupB = ["GroupB", "GrupoB"];
+var t_TableTotals = ["Totals", "Totales"];
+var t_TableSuccess = ["Success", "&Eacutexitos"];
+var t_TableFailure = ["Failures", "Fracaso"];
+var t_lessThan = ["Less than &le;", "Menos de &le;"];
+var t_greaterThan = ["Greater than &ge;", "M&aacute;s de &ge;"];
+var t_beyond = ["Beyond", "M&aacute;s alla de"];
+var g_showNotes = false;
+var t_notesButton = ["User notes", "Notas"];
+var t_usedata = ["Use Data",  "Utilizar los datos"];
+var g_tableEntry = false;
+var g_tableText = "";
+
+
+var g_shufflePlot = {
+	canvasName: "shufflePlot",		// ID of canvas html element
+	canvasWidth: 0, 				// Width of chart canvas (controlled by html canvas element). Set by pageSetup() so we can use it elsewhere.
+	canvasHeight: 0, 				// Height of chart canvas (controlled by html canvas element). Set by pageSetup() so we can use it elsewhere.
+	usableCanvasWidth: 0, 			// Usable width of chart canvas, after leaving space for axes. Set by pageSetup().
+	usableCanvasHeight: 0, 			// Usable width of chart canvas, after leaving space for axes. Set by pageSetup().
+	minX: 0, 						// Minimum chart X value. Set by set...MinMax() based on observations.
+	minY: 0, 						// Minimum chart Y value. Set by set...MinMax() based on observations.
+	maxX: 0,	 					// Maximum chart X value. Set by set...MinMax() based on observations.
+	maxY: 0, 						// Maximum chart Y value. Set by set...MinMax() based on observations.
+	chartToCanvasScaleX: 0, 		// Scaling factor = g_shufflePlot.usableCanvasWidth / (g_shufflePlot.maxX - g_shufflePlot.minX).
+	chartToCanvasScaleY: 0, 		// Scaling factor = g_shufflePlot.usableCanvasHeight / (g_shufflePlot.maxY - g_shufflePlot.minY).
+	xTitle: "X", 					// The x-axis Title.
+	yTitle: t_percentage[g_language],			// The y-axis Title.
+	xTitleCanvasOffset: 30,			// Canvas offset of x-axis title relative to x-axis.
+	yTitleCanvasOffset: -30,		// Canvas offset of y-axis title relative to y-axis.
+	xLabelCount: 3,					// Desired number of x-axis labels.
+	xLabelFct: stdPlotXLabelFct,	// The function called to get X-label info.
+	yLabelCount: 3,					// Desired number of y-axis labels.
+	yLabelFct: stdPlotYLabelFct,	// The function called to get Y-label info.
+	xLabelDecimals: 1,				// Desired number of x-axis label decimals (e.g. 1 for 1.x, 2.x, 3.x)
+	xLabelCanvasOffset: 15,			// Canvas offset of x-axis labels relative to x-axis.
+	yLabelCanvasOffset: -10,		// Canvas offset of y-axis labels relative to y-axis.
+	xBorderWidth: 40,				// The size (pixels) between bottom edge of canvas and x-axis.
+	yBorderWidth: 40,				// The size (pixels) between left edge of canvas and y-axis.
+	y2BorderWidth: 20				// The size (pixels) between right edge of canvas and right-most point of x-axis.
+	};
+var g_simSamplePlot = {
+	canvasName: "simSamplePlot",	// ID of canvas html element
+	canvasWidth: 0, 				// Width of chart canvas (controlled by html canvas element). Set by pageSetup() so we can use it elsewhere.
+	canvasHeight: 0, 				// Height of chart canvas (controlled by html canvas element). Set by pageSetup() so we can use it elsewhere.
+	usableCanvasWidth: 0, 			// Usable width of chart canvas, after leaving space for axes. Set by pageSetup().
+	usableCanvasHeight: 0, 			// Usable width of chart canvas, after leaving space for axes. Set by pageSetup().
+	minX: 0, 						// Minimum chart X value. Set by set...MinMax() based on observations.
+	minY: 0, 						// Minimum chart Y value. Set by set...MinMax() based on observations.
+	maxX: 0,	 					// Maximum chart X value. Set by set...MinMax() based on observations.
+	maxY: 0, 						// Maximum chart Y value. Set by set...MinMax() based on observations.
+	chartToCanvasScaleX: 0, 		// Scaling factor = g_shufflePlot.usableCanvasWidth / (g_shufflePlot.maxX - g_shufflePlot.minX).
+	chartToCanvasScaleY: 0, 		// Scaling factor = g_shufflePlot.usableCanvasHeight / (g_shufflePlot.maxY - g_shufflePlot.minY).
+	xTitle: "X", 					// The x-axis Title.
+	yTitle: "Percentage",			// The y-axis Title.
+	xTitleCanvasOffset: 30,			// Canvas offset of x-axis title relative to x-axis.
+	yTitleCanvasOffset: -30,		// Canvas offset of y-axis title relative to y-axis.
+	xLabelCount: 3,					// Desired number of x-axis labels.
+	xLabelFct: stdPlotXLabelFct,	// The function called to get X-label info.
+	yLabelCount: 3,					// Desired number of y-axis labels.
+	yLabelFct: stdPlotYLabelFct,	// The function called to get Y-label info.
+	xLabelDecimals: 1,				// Desired number of x-axis label decimals (e.g. 1 for 1.x, 2.x, 3.x)
+	xLabelCanvasOffset: 15,			// Canvas offset of x-axis labels relative to x-axis.
+	yLabelCanvasOffset: -10,		// Canvas offset of y-axis labels relative to y-axis.
+	xBorderWidth: 40,				// The size (pixels) between bottom edge of canvas and x-axis.
+	yBorderWidth: 40,				// The size (pixels) between left edge of canvas and y-axis.
+	y2BorderWidth: 20				// The size (pixels) between right edge of canvas and right-most point of x-axis.
+	};
+var g_histogram = {
+	canvasName: "histogram",		// ID of canvas html element
+	canvasWidth: 0, 				// Width of chart canvas (controlled by html canvas element). Set by pageSetup() so we can use it elsewhere.
+	canvasHeight: 0, 				// Height of chart canvas (controlled by html canvas element). Set by pageSetup() so we can use it elsewhere.
+	usableCanvasWidth: 0, 			// Usable width of chart canvas, after leaving space for axes. Set by pageSetup().
+	usableCanvasHeight: 0, 			// Usable width of chart canvas, after leaving space for axes. Set by pageSetup().
+	minX: 0, 						// Minimum chart X value. Set by setHistogramMinMax() based on observations.
+	minY: 0, 						// Minimum chart Y value. Set by setHistogramMinMax() based on observations.
+	maxX: 0,	 					// Maximum chart X value. Set by setHistogramMinMax() based on observations.
+	maxY: 0, 						// Maximum chart Y value. Set by setHistogramMinMax() based on observations.
+	chartToCanvasScaleX: 0, 		// Scaling factor = g_shufflePlot.usableCanvasWidth / (g_shufflePlot.maxX - g_shufflePlot.minX).
+	chartToCanvasScaleY: 0, 		// Scaling factor = g_shufflePlot.usableCanvasHeight / (g_shufflePlot.maxY - g_shufflePlot.minY).
+	xTitle: "", 					// The x-axis Title.
+	yTitle: t_NumShuffles[g_language],				// The y-axis Title.
+	xTitleCanvasOffset: 30,			// Canvas offset of x-axis title relative to x-axis.
+	yTitleCanvasOffset: -30,		// Canvas offset of y-axis title relative to y-axis.
+	xLabelCount: 5,					// Desired number of x-axis labels.
+	xLabelFct: stdPlotXLabelFct,	// The function called to get X-label info.
+	yLabelCount: 6,					// Desired number of y-axis labels.
+	yLabelFct: stdPlotYLabelFct,	// The function called to get Y-label info.
+	xLabelDecimals: 2,				// Desired number of x-axis label decimals (e.g. 1 for 1.x, 2.x, 3.x)
+	xLabelCanvasOffset: 15,			// Canvas offset of x-axis labels relative to x-axis.
+	yLabelCanvasOffset: -10,		// Canvas offset of y-axis labels relative to y-axis.
+	xBorderWidth: 40,				// The size (pixels) between bottom edge of canvas and x-axis.
+	yBorderWidth: 40,				// The size (pixels) between left edge of canvas and y-axis.
+	y2BorderWidth: 20,				// The size (pixels) between right edge of canvas and right-most point of x-axis.
+	binCount: 20					// The standard number of histogram bins.
+	};
+var g_densityPlot = {
+	canvasName: "densityPlot",		// Must match id of canvas element in html
+	canvas: null,					// Canvas pointer. Set by plotSetup().
+	ctx: null,						// 2d context for drawing on canvasName. Set by plotSetup().
+	canvasWidth: 0, 				// Width of chart canvas (controlled by html canvas element). Set by pageSetup() so we can use it elsewhere.
+	canvasHeight: 0, 				// Height of chart canvas (controlled by html canvas element). Set by pageSetup() so we can use it elsewhere.
+	usableCanvasWidth: 0, 			// Usable width of chart canvas, after leaving space for axes. Set by pageSetup().
+	usableCanvasHeight: 0, 			// Usable width of chart canvas, after leaving space for axes. Set by pageSetup().
+	minX: 0, 						// Minimum chart X value. Set by setDensityPlotMinMax()
+	minY: 0, 						// Minimum chart Y value. Set by setDensityPlotMinMax()
+	maxX: 5,	 					// Maximum chart X value. Set by setDensityPlotMinMax()
+	maxY: 0.5, 						// Maximum chart Y value. Set by setDensityPlotMinMax()
+	chartToCanvasScaleX: 0, 		// Scaling factor = g_densityPlot.usableCanvasWidth / (g_densityPlot.maxX - g_densityPlot.minX).
+	chartToCanvasScaleY: 0, 		// Scaling factor = g_densityPlot.usableCanvasHeight / (g_densityPlot.maxY - g_densityPlot.minY).
+	xTitle: "Chi-squared values",			// The x-axis Title.
+	yTitle: "",						// The y-axis Title.
+	xTitleCanvasOffset: 30,			// Canvas offset of x-axis title relative to x-axis.
+	yTitleCanvasOffset: -35,		// Canvas offset of y-axis title relative to y-axis.
+	xLabelCount: 5,					// Desired number of x-axis labels.
+	xLabelDecimals: 1,				// Desired number of x-axis label decimals (e.g. 1 for 1.x, 2.x, 3.x)
+	xLabelCanvasOffset: 15,			// Canvas offset of x-axis labels relative to x-axis.
+	yLabelCanvasOffset: -10,		// Canvas offset of y-axis labels relative to y-axis.
+	topBorderWidth: 5,				// The size (pixels) between top edge of canvas and top-most point of y-axis.
+	xBorderWidth: 60,				// The size (pixels) between bottom edge of canvas and x-axis.
+	yBorderWidth: 20,				// The size (pixels) between left edge of canvas and y-axis.
+	y2BorderWidth: 20,				// The size (pixels) between right edge of canvas and right-most point of x-axis.
+	bars: 250,						// Set bars high enough so that density plot appears smooth to the eye
+	dragToResizePixels: 10,			// Size of drag-to-resize area
+	resizing: false,				// If true, user is dragging drag-to-resize area.
+	};
+
+var g_minDistanceForSelect = 75;	// Minimum (squared) distance to select a point when user tries to click on it. 
+var g_minTouchDistance = 250;		// On touch interface, code sets g_minDistanceForSelect =  g_minTouchDistance. Required due to less precision in touching.
+var g_isTouchInterface = (typeof document.ontouchstart !== 'undefined') ? true : false;
+									// Is applet running on touch device? If so, need to look for ontouchstart rather than onmousedown, etc.
+var upperLimitX =0;
+var lowerLimitX = 0;
+
+// Shortcut for much-used document.getElementById().
+function bc$(id) {
+  return document.getElementById(id);
+}
+
+function getInternetExplorerVersion() {
+	// Returns the version of Internet Explorer or a -1
+	// (indicating the use of another browser).
+	var rv = -1; // Return value assumes failure.
+	if (navigator.appName == 'Microsoft Internet Explorer') {
+		var ua = navigator.userAgent;
+		var re  = new RegExp("MSIE ([0-9]{1,}[\.0-9]{0,})");
+		if (re.exec(ua) != null) rv = parseFloat( RegExp.$1 );
+	}
+	return rv;
+}
+
+
+// See if browser is capable of canvas support. If not, give warning to user but continue.
+function checkBrowser() {
+	// check if object supports getContext() method, a method of the canvas element
+	// Note: Need to refer to a canvas element that is defined in the HTML, which in this case in "chart".
+	// See https://groups.google.com/forum/?fromgroups#!topic/google-excanvas/tz6IIKQzROA for a discussion of getContext with dynamically generated canvas.
+	// Probably we should add a small canvas element to all applets that has the same name, e.g. checkBrowserCanvas... that way we don't have
+	// to touch this routine for every applet.
+	var canvasCheck=(bc$("shufflePlot").getContext) ? true : false;
+	if (!canvasCheck) {
+		// Doesn't look good.
+		showAlert("It appears your browser lacks drawing (canvas) support. Please switch to a recent version of Chrome, Firefox, Safari, or Internet Explorer 9 or higher.");
+	}
+}
+
+// Shortcut for much-used document.getElementById().
+function bc$(id) {
+  return document.getElementById(id);
+};
+
+// Get url parameter value
+function gup( name )
+{
+  name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+  var regexS = "[\\?&]"+name+"=([^&#]*)";
+  var regex = new RegExp( regexS );
+  var results = regex.exec( window.location.href );
+  if( results == null )
+    return "";
+  else
+    return results[1];
+}
+
+// Initialize page.
+function pageSetup() {
+	// Add trim - missing in IE.
+	if(typeof String.prototype.trim !== 'function') {
+	  String.prototype.trim = function() {
+		return this.replace(/^\s+|\s+$/g, ''); 
+	  }
+	}
+	checkBrowser();
+	if (gup("hideExtras") == "1") {
+		bc$("pageTitle").style.display="none";
+		bc$("about").style.display="none";
+		bc$("pageLastModified").style.display="none";
+	}
+	
+	if (gup("hideExtras") == "2") {
+		bc$("pageTitle").style.display="none";
+		bc$("about").style.display="none";
+		bc$("pageLastModified").style.display="none";
+		bc$("appletTitle").style.display = "none";
+	}
+	plotSetup(g_shufflePlot);
+	plotSetup(g_simSamplePlot);
+	plotSetup(g_histogram);
+	// Show page-last-modified date.
+	setPageLastModified();
+	// Put in a small dataset.
+	// Note: IE9 doesn't display linebreaks if we set innerHTML rather than value.
+	if(gup("hideExtras") == "2") {
+		bc$("dataText").value = g_initDataText;
+		bc$("hypProbText").value = ".25, .25, .25, .25";
+		//bc$("is2x2Input").checked = true;
+		bc$("input2x2TreatmentSuccessCount").value = "10";
+		bc$("input2x2ControlSuccessCount").value = "3";
+		bc$("input2x2TreatmentFailureCount").value = "5";
+		bc$("input2x2ControlFailureCount").value = "12";
+		change2x2Input();		
+		bc$("shuffleShowCards").checked = true;	} 
+	else {
+		bc$("dataText").value = g_initDataText;
+		bc$("hypProbText").value = ".25, .25, .25, .25";
+	}
+	useData();
+	if (g_isTouchInterface) {
+		// ipad/iphone/etc. Watch for touches.
+		document.ontouchstart = onMouseDown;
+		document.ontouchend = onMouseUp;
+		// Increase tolerance for selecting points.
+		g_minDistanceForSelect = g_minTouchDistance;
+	} 
+	// On non-touch devices, watch for mouse-button-down and mouse-button-up. Required for moving points and moving the movable line.
+	document.onmousedown = onMouseDown;
+	document.onmouseup = onMouseUp;
+	textSetup();
+
+	// Hide reportingOutcome SELECT box for now.
+//	bc$("reportingOutcome").style.display = "";
+	
+	bc$("appletTitle").title = t_title[g_language];
+}
+
+function textSetup(){
+	var lang=parseInt(gup("language"));
+	if(!isNaN(lang)) {
+		// if language specified in URL, use that.
+		g_language =lang;
+	}
+	if (gup("hideExtras") == "1") {
+		bc$("appletTitle").style.display="none";
+	} else {
+		bc$("appletTitle").innerHTML=t_title[g_language];
+	}
+
+	bc$("t_SampleData").innerHTML =   t_EnterData[g_language]  ;
+	bc$("plotTitle").innerHTML =  "<strong>" +t_SampleData[g_language]+ "</strong>" ;
+	g_explanatoryTitle = t_explanatory[g_language]; 
+	g_responseTitle = t_response[g_language];
+	
+
+//	bc$("t_explanatory").innerHTML = t_explanatory[g_language];
+//	bc$("t_response").innerHTML = t_response[g_language];
+	bc$("btnUseData").innerHTML = t_usedata[g_language];
+	bc$("btnUseTable").innerHTML = t_usetable[g_language];
+	bc$("btnClearData").innerHTML = t_reset[g_language];
+//	bc$("showDiffOption").innerHTML = t_diff[g_language];
+//	bc$("showDiffOption").innerHTML = t_diff[g_language];
+	bc$("lessThan").innerHTML = t_lessThan[g_language];
+	bc$("greaterThan").innerHTML = t_greaterThan[g_language];
+	bc$("beyond").innerHTML = t_beyond[g_language];
+
+		g_treatmentText = t_group[g_language] + "A";		// Abbreviation for treatment level when converting 2x2 input into text input
+		g_controlText = t_group[g_language] + "B";
+		g_successText = t_successPlain[g_language];		// Text for success when converting 2x2 input into text input
+		g_failureText = t_failure[g_language];		// Text for failure when converting 2x2 input into text input
+	
+	bc$("showShuffleOptionsLabel").innerHTML = t_ShowShuffle[g_language];
+	bc$("statistic").innerHTML = t_statistic[g_language];
+//	bc$("t_diff").innerHTML = t_diff[g_langugage];
+//	bc$("t_rr").innerHTML = t_rr[g_language];
+//	bc$("t_count").innerHTML = t_count[g_language];
+//	bc$("t_maxmin").innerHTML = t_maxmin[g_language];
+//	bc$("t_output").innerHTML = t_output[g_language];
+//	bc$("about").innerHTML = t_about[g_language];
+	bc$("cellShowTable").innerHTML = t_ShowTable[g_language];
+	bc$("cellShowChisqOutput").innerHTML = t_output[g_language]; 
+//	bc$("t_success").innerHTML = t_success[g_language];
+//	bc$("t_observed").innerHTML = t_observed[g_language];
+//	bc$("showShuffleOptionsLabel").innerHTML = t_ShowShuffle[g_language];
+	bc$("cellNumberOfShufflesLabels").innerHTML = t_NumShuffles[g_language];
+	bc$("cellHypothesizedProbsLabel").innerHTML = "Enter hypothesized probabilities:";
+	bc$("showAltProbsLabel").innerHTML = "Alternative";
+	bc$("cellAltProbs").innerHTML = "Enter alternative probabilities:";
+	bc$("ShuffleButton").innerHTML = t_shuffle[g_language];
+//	bc$("t_TotalShuffles").innerHTML = t_TotalShuffles[g_language];
+//	bc$("t_count").innerHTML = t_count[g_language];
+	bc$("shuffleShowTableLabel").innerHTML = t_table[g_language];
+	bc$("shuffleShowCardsLabel").innerHTML = t_cards[g_language];
+	bc$("shuffleShowPlotLabel").innerHTML = t_plot[g_language];
+//	bc$("cellShuffledTableTextLabel").innerHTML = t_MostRecentTable[g_language];
+	bc$("cellShuffleCountSamplesLabel").innerHTML = t_CountSamples[g_language];
+//	bc$("t_count").innterHTML=t_count[g_language];
+	bc$("t_countButton").value=t_countButton[g_language];
+	
+	bc$("cibox").innerHTML = "";
+//	bc$("lnrelriskbox").innerHTML=t_lnrelrisk[g_language];
+
+	bc$("overlayFLabel").innerHTML = t_overlay[g_language];
+	bc$("overlayNormalLabel").innerHTML = normal_overlay[g_language];
+//	bc$("TableTotals").innerHTML = t_TableTotals[g_language];
+//	bc$("TableTotals2").innerHTML = t_TableTotals[g_language];
+	bc$("showPreviousLabel").innerHTML=t_showPrevious[g_language];
+
+	redraw();
+}
+
+
+
+
+
+function getMouseDownCanvasXY(plot, event) {
+var x=null;
+var y=null;
+var canvas = bc$(plot.canvasName);
+
+	if (g_isTouchInterface && event.touches !== undefined) {
+		// ipad/iphone/etc.
+		// Only deal with one finger touches
+		//		alert(event.touches);
+		if(event.touches.length != 1) return;
+		// Get the information for finger #1
+		var touch = event.touches[0]; 
+		x = touch.pageX;
+		y = touch.pageY;
+		//bc$("Notes").innerHTML = "pageX: " + touch.pageX + " pageY: " + touch.pageY
+		//	+ " clientX: " + touch.clientX + " clientY: " + touch.clientY
+		//	+ " screenX: " + touch.screenX + " screenY:" + touch.screenY;
+		// alert("x: " + x + " y: " + y);
+	}
+	if (x==null && y == null){
+		if (getInternetExplorerVersion() > 0) {
+			var theEvent = event ? event : window.event;
+			x = theEvent.clientX;
+			y = theEvent.clientY;
+			// alert("x=" + x + ", y=" + y);
+		} else {
+			// All other browsers
+			if (event.x != undefined && event.y != undefined)
+			{
+				x = event.x;
+				y = event.y;
+				//bc$("Notes").innerHTML = "X: " + event.x + " Y: " + event.y;
+				// alert("x: " + x + " y: " + y);
+			}
+			else // Firefox method to get the position
+			{
+			  x = event.clientX;
+			  y = event.clientY;
+			}
+		}
+	}
+	if (canvas.getBoundingClientRect) {
+		// Everything is easy if we have getBoundingClientRect!
+		var rect = canvas.getBoundingClientRect();
+		x -= rect.left;
+        y -= rect.top;
+	} else {
+		// Don't have getBoundingClientRect, have to use brute force
+		// Because our canvas is inside a table, we need to loop through parent elements and add up their offsets, then subtract that from the absolute
+		// pixel positions stored in x,y.
+		var currentElement = bc$(plot.canvasName);  
+		var totalOffsetX = 0;
+		var totalOffsetY = 0;
+		do{
+			totalOffsetX += currentElement.offsetLeft;
+			totalOffsetY += currentElement.offsetTop;
+		}
+		while(currentElement = currentElement.offsetParent)
+		// bc$("Notes2").innerHTML = "offsetX: " + totalOffsetX + " totaloffsetY: " + totalOffsetY;
+		// Convert to canvas X and Y.
+		x -= totalOffsetX;
+		y -= totalOffsetY;
+		// Deal with scrolling
+		var scrollX = document.body.scrollLeft;
+		var scrollY = document.body.scrollTop;
+		x += scrollX;
+		y += scrollY;
+	}
+//	console.log("x: " + x + ", y:" + y + " totalOffsetX:" + totalOffsetX + ", totalOffsetY:" + totalOffsetY + " scrollY:" + scrollY);
+	return {canvasX: x, canvasY: y}
+}
+
+function getMouseDownChartXY(plot, event) {
+	var canvasXY = getMouseDownCanvasXY(plot, event);
+	var x = canvasXY.canvasX;
+	var y = canvasXY.canvasY;
+	// See if we clicked on our canvas at all.
+	if (x < 0 || y < 0) return null;
+	if (x > bc$(plot.canvasName).width) return null;
+	if (y > bc$(plot.canvasName).height) return null;
+	// bc$("Notes3").innerHTML = "after offset, x: " + x + " y: " + y + " canvasWidth=" + bc$("pairPlot").width + " canvasHeight=" + bc$("pairPlot").height;
+	// Finally, we convert to chart X and Y.
+	var chartX = toChartX(plot, x);
+	var chartY = toChartY(plot, y);
+	// bc$("Notes4").innerHTML = "chart x: " + x + " y: " + y;
+	// Return chart X and Y.
+	return {x: chartX, y: chartY}
+}
+
+function getClosestShuffleStatsIndex(chartXY) {
+var minDistance = null;
+var distance = null;
+var closestIndex = null;
+	
+	for (var i=0; i < g_shuffleStats.length; i++) {
+		// Compute squared distance from chartXY to observation i;
+		// Do this in terms of canvas coordinates, just in case we are dealing with very large (chart) data,
+		// which means the (chart) distances are huge even if we are just next to the point on the chart.
+		var chartX = g_shuffleStats[i].histogramChartX;
+		var chartY = g_shuffleStats[i].histogramChartY;
+		distance = Math.pow(toCanvasX(g_histogram, chartX) - toCanvasX(g_histogram, chartXY.x), 2) 
+			+ Math.pow(toCanvasY(g_histogram, chartY) - toCanvasY(g_histogram, chartXY.y), 2);
+		if (distance <= g_minDistanceForSelect) {
+			// Distance is small enough. See if it's smallest so far.
+			if (minDistance == null || (minDistance != null && distance < minDistance)) {
+				// First one, or smallest distance so far, take it. 
+				minDistance = distance;
+				closestIndex = i;
+			}
+		}
+	}
+	return closestIndex;
+}
+
+function onMouseDown(event) {
+	// Get chart X and Y of mouse... see if on histogram
+	var chartXY = getMouseDownChartXY(g_histogram, event);
+	// If user didn't click on histogram, then exit early.
+	if (chartXY == null) return;
+	// See if clicked close to a histogram point.
+	var closestShuffleStatsIndex = getClosestShuffleStatsIndex(chartXY);
+	// If not close to a histogram point, then see if at countInput.  If not, exit early.
+	if (closestShuffleStatsIndex == null) {
+		var countInput = parseFloat(bc$("countInput").value);
+		var x = countInput;	
+		var distance = Math.pow(toCanvasX(g_histogram, x) - toCanvasX(g_histogram, chartXY.x), 2);
+		if (distance <= g_minDistanceForSelect) {
+				// Have selected line rather than a dot. Start tracking movement.
+				if (g_isTouchInterface) {
+					document.ontouchmove = onMouseMove;
+				} else {
+					document.onmousemove = onMouseMove;	
+				}
+				// prevent cursor from changing to "text selection" cursor while dragging.
+				document.onselectstart = function () { return false; };
+		}
+		return;
+	}
+	// Display this shuffle
+	g_shuffleIndex = g_shuffleStats[closestShuffleStatsIndex].shuffleIndex;
+	// Save which shuffle is selected, so it can be highlighted in histogram
+	g_shuffleStatsSelectedIndex = closestShuffleStatsIndex;
+	// Redraw, so the shuffle in question gets displayed.
+	redraw();
+	// Reset which shuffle is selected, so we don't keep highlighting it.
+	g_shuffleStatsSelectedIndex = null;
+}
+
+
+function onMouseMove(event) {
+	if (g_isTouchInterface) {
+		// We want to drag a point or movable line around, not do scrolling (default action of touchmove on touch interface).
+		event.preventDefault();
+	}
+	// Get chart X and Y of mouse.
+	var chartXY = getMouseDownChartXY(g_histogram, event);
+	if (chartXY == null) {
+		// Moved off the chart - do something reasonable.
+	} else {
+		// Still on chart - display new position.
+		//bc$("MovingChartXY").innerHTML = "ChartX: " + chartXY.x.toFixed(2) + " ChartY: " + chartXY.y.toFixed(2);
+			// We are moving the highlight line
+			// Change its position
+			//g_extremeAsX = Math.round(chartXY.x);
+			bc$("countInput").value	=Math.round(chartXY.x*100)/100;	
+			// Redraw the chart.
+			redraw();
+		
+	}
+}
+
+function onMouseUp(event) {
+	// Stop tracking movement.
+	if (g_isTouchInterface) {
+		document.ontouchmove = null;
+	} else {
+		document.onmousemove = null;
+	}
+	// Return mouse-down selection behavior to default.
+	document.onselectstart = null;
+//	redraw(); removing this seemed to help with the touchpad issues
+}
+
+
+function plotSetup(plot) {
+var canvas = bc$(plot.canvasName);  
+var ctx = canvas.getContext("2d");  
+
+	plot.canvas = canvas; 
+	plot.ctx = ctx;  
+	ctx.font = "9pt verdana";
+
+	// Set chart width and height, based on html canvas definition.
+	plot.canvasWidth = canvas.width;
+	plot.canvasHeight = canvas.height;
+	// Set usable canvas width and height, leaving space for x border and y border.
+	plot.usableCanvasWidth = plot.canvasWidth - plot.yBorderWidth - plot.y2BorderWidth;
+	// plot.usableCanvasWidth = plot.canvasWidth - plot.yBorderWidth;
+	plot.usableCanvasHeight = plot.canvasHeight - plot.xBorderWidth;
+}
+function LogGamma(Z) {
+	with (Math) {
+		var S=1+76.18009173/Z-86.50532033/(Z+1)+24.01409822/(Z+2)-1.231739516/(Z+3)+.00120858003/(Z+4)-.00000536382/(Z+5);
+		var LG= (Z-.5)*log(Z+4.5)-(Z+4.5)+log(S*2.50662827465);
+	}
+	return LG
+}
+ 
+function Gcf(X,A) {        // Good for X>A+1
+	with (Math) {
+		var A0=0;
+		var B0=1;
+		var A1=1;
+		var B1=X;
+		var AOLD=0;
+		var N=0;
+		while (abs((A1-AOLD)/A1)>.00001) {
+			AOLD=A1;
+			N=N+1;
+			A0=A1+(N-A)*A0;
+			B0=B1+(N-A)*B0;
+			A1=X*A0+N*A1;
+			B1=X*B0+N*B1;
+			A0=A0/B1;
+			B0=B0/B1;
+			A1=A1/B1;
+			B1=1;
+		}
+		var Prob=exp(A*log(X)-X-LogGamma(A))*A1;
+	}
+	return 1-Prob
+}
+ 
+function Gser(X,A) {        // Good for X<A+1.
+    with (Math) {
+		var T9=1/A;
+		var G=T9;
+		var I=1;
+		while (T9>G*.00001) {
+			T9=T9*X/(A+I);
+			G=G+T9;
+			I=I+1;
+		}
+		G=G*exp(A*log(X)-X-LogGamma(A));
+    }
+    return G
+}
+ 
+function Gammacdf(x,a) {
+	var GI;
+	if (x<=0) {
+		GI=0
+	} else if (x<a+1) {
+		GI=Gser(x,a)
+	} else {
+		GI=Gcf(x,a)
+	}
+	return GI
+}
+
+
+function getChiDensity(x, df){
+var density = 0;
+
+	// Delta
+	var xDelta = (g_densityPlot.maxX - g_densityPlot.minX) / g_densityPlot.bars;
+	if (xDelta > 0) {
+		// We can make an estimate by computing cdf a little to left and to right of x, and then calculating density.
+		var xLeftTransform = (x - xDelta);
+		var xRightTransform = (x + xDelta);
+		var leftCDF = getchisqCDF(xLeftTransform, df);
+		var rightCDF = getchisqCDF(xRightTransform, df);
+		density = (rightCDF - leftCDF) / (2 * xDelta);
+	}
+	return density;
+}
+
+
+function getchisqCDF(Z, DF) {
+	if (DF<=0) {
+		showAlert("Degrees of freedom must be positive")
+	} else {
+		Chisqcdf=Gammacdf(Z/2,DF/2)
+	}
+	Chisqcdf=Math.round(Chisqcdf*100000)/100000;
+    return Chisqcdf;
+}
+
+function smallerpvalue(PopSize,SuccNum,SampleSize,x){
+var prob1 = hypercdf(PopSize,SuccNum,SampleSize,x) - hypercdf(PopSize,SuccNum,SampleSize,x-1);
+// To deal with very small differences in probabilities that should be exactly the same due to symmetric densities but
+// are not exactly the same due to numerical difficulties, shorten to a fixed number of significant digits.
+var places = 6;
+prob1 = parseFloat(prob1.toPrecision(places));
+var prob2=0;
+var priorProb = 0;
+var lowerLimitX = 0;
+var upperLimitX = 0;
+var pvalue = 0;
+	for (var x2 = 0; x2 <= SuccNum; x2++) {  //July 11: changed this go to SuccNum instead
+		if (x2 == 0) prob2 = hypercdf(PopSize,SuccNum,SampleSize,x2) ;
+		else prob2 = hypercdf(PopSize,SuccNum,SampleSize,x2) - hypercdf(PopSize,SuccNum,SampleSize,x2-1);
+		prob2 = parseFloat(prob2.toPrecision(places));
+		if (prob2 <= prob1) {
+			pvalue += prob2;
+			if (upperLimitX == 0) lowerLimitX = x2;
+			}
+		else {
+			upperLimitX = x2;
+			}
+//			lowerLimitX = x2;
+//		if (priorProb <= prob1 && prob2 >= prob1 && lowerLimitX == 0) {
+//				lowerLimitX = x2;
+//		}
+//		if (priorProb > prob1 && prob2 <= prob1) {
+//				upperLimitX = x2;
+//		}
+//		priorProb = prob2;			
+	}
+if (lowerLimitX == SuccNum & upperLimitX == 0) {  //every probability was smaller so return to original x value
+			lowerLimitX = x; upperLimitX = x+1;
+			}
+else if (upperLimitX < SuccNum) upperLimitX = upperLimitX + 1;
+return {
+	lowerLimitX: lowerLimitX,
+	upperLimitX: upperLimitX,
+	pvalue: pvalue
+	}
+
+}
+// Compute summary statistics for observations.
+function getObsStats(shuffleIndex) {
+var levelOutcomeCount = new Array(); // [0,g_numLevels), each entry is an array of observed counts by outcome within this level.
+var levelOutcomePct = new Array(); // [0,g_numLevels), each entry is an array of percentages by outcome within the level.
+var levelOutcomeProp = new Array(); // [0,g_numLevels), each entry is an array of proportions by outcome within the level.
+var levelOutcomeExpectedCount = new Array(); // [0,g_numLevels), each entry is an array of expected counts by outcome within this level.
+var outcomeCount = new Array(); // [0,g_numOutcomes), each entry is count(observations with this outcome).
+var outcomeRatio = new Array(); // [0,g_numOutcomes), each entry is outcomeCount[outcome] / g_numObs.
+var levelCount = new Array(); // [0, g_numLevels), each entry is count (observations for this level).
+var maxX = null;
+var maxY = null;
+var sumAbsDiff = 0;
+var meanAbsDiff = 0;
+var chiSquared = 0.0;
+var chiSquaredContrib = new Array();
+var diff = 0;
+var SDdiff = 0;
+var SDlnrisk = 0;
+var RR = 0; var lnRR = 0;
+var MM = 0;
+var maxTally = 0;
+var minTally = 0;
+var FETpvalue = 0;
+var Xcount = 0;
+var propA = 0;
+
+	// If shuffleIndex not passed in, use g_shuffleIndex[]. */
+	if (shuffleIndex == undefined) {
+		shuffleIndex = g_shuffleIndex;
+	}
+	// Note: We don't need to use g_obsY[shuffleIndex[i]] for some of the following (e.g. for a sum it doesn't matter).
+	// But in other cases it does matter, e.g. for sum x*y it does matter.
+	// For now, we only use shuffleIndex[] when it matters.
+	for(i=0; i<g_numObs; i++) {
+		if (i==0) {
+			maxX = shuffleIndex[i];
+			//maxY = g_obsY[i];
+		} else {
+			if (shuffleIndex[i] > maxX) maxX = shuffleIndex[i];
+			//if (g_obsY[i] > maxY) maxY = g_obsY[i];
+		}
+	}
+	if (g_numLevels > 0){
+		// Init level count array.
+		for (level = 0; level < g_numLevels; level++){
+			levelCount[level]=0;
+		}
+		// count up the observations
+		for (level = 0; level < g_numLevels; level++){
+			for (i=0;i<=g_numObs; i++){
+				if (shuffleIndex[i] == level) {
+					levelCount[level]++;
+				}
+			}
+		levelOutcomePct[level]=levelCount[level]/g_numObs*100;
+		levelOutcomeProp[level]=levelCount[level]/g_numObs;
+		}
+	
+		
+		var minphat = 1;
+		var maxphat = 0;
+		
+		chiSquared = 0.0;
+		// Init chiSquaredContrib array.
+		chiSquaredContrib = new Array();
+		if (g_propValues.length == 0) for (i=0; i<g_numLevels; i++) g_propValues[i]=1/g_numLevels;
+		if (g_altValues.length == 0) for (i=0; i<g_numLevels; i++) g_altValues[i]=1/g_numLevels;
+		if (g_propValues.length != g_numLevels) {
+			g_propValues = new Array();
+			for (i=0; i<g_numLevels; i++) g_propValues[i]=1/g_numLevels;
+			}
+		if (g_numObs > 0) {
+			// Computed expected outcomes for each level/outcome
+			for(level=0; level<g_numLevels; level++) {
+					levelOutcomeExpectedCount[level] = g_numObs*g_propValues[level];
+					sumAbsDiff += Math.abs(levelCount[level]-levelOutcomeExpectedCount[level]);
+					if (levelOutcomeProp[level] < minphat) minphat = levelOutcomeProp[level];
+					if (levelOutcomeProp[level] > maxphat) maxphat = levelOutcomeProp[level];
+					chiSquaredContrib[level]= Math.pow(levelCount[level]-levelOutcomeExpectedCount[level],2)/levelOutcomeExpectedCount[level];
+					chiSquared +=chiSquaredContrib[level];
+			}
+			
+		var df = (g_numLevels-1);
+		chiSquaredPvalue = getchisqCDF(chiSquared, df );		
+		MM = (maxphat - minphat);				
+		meanAbsDiff = sumAbsDiff/(g_numLevels);
+		maxTally = Math.round(maxphat*g_numObs);
+		minTally = Math.round(minphat*g_numObs);
+		propA = levelOutcomeProp[0];
+		}
+	}
+
+
+
+	var tosethistmin = 0; var tosethistmax = 1;
+	var tosetdiffmin = 0; var tosetdiffmax = 1;
+	
+	var midpoint=0;
+	var halfwidth=0;
+	var i = 0;
+	var lowerlimit = new Array();
+	var upperlimit = new Array();
+	var p1=0;
+	var p2=0;
+	var CIgroup1 = new Array();
+	var CIgroup2 = new Array();
+
+	
+	return {
+		maxX: maxX, maxY: maxY, 
+		levelOutcomeCount: levelOutcomeCount,
+		levelOutcomeExpectedCount: levelOutcomeExpectedCount,
+		levelOutcomePct: levelOutcomePct,
+		levelOutcomeProp: levelOutcomeProp,
+		meanAbsDiff: meanAbsDiff,
+		outcomeCount: outcomeCount,
+		outcomeRatio: outcomeRatio,
+		levelCount: levelCount,
+		chiSquared: chiSquared,
+		chiSquaredContrib: chiSquaredContrib,
+		diff: diff,
+		SDdiff: SDdiff,
+		MM: MM,
+		maxTally: maxTally,
+		minTally: minTally,
+		propA: propA,
+		tosethistmin: tosethistmin,
+		tosethistmax: tosethistmax,
+		tosetdiffmin: tosetdiffmin,
+		tosetdiffmax: tosetdiffmax
+	}
+}
+
+// Compute shuffle stats and histograms.
+function getShuffleStats() {
+var sum = 0;
+var sumSq = 0;
+var avg = 0;
+var shuffleStdDev = 0;
+var min = null;
+var max = null;
+var range = 0;
+var binWidth = 0;
+var hist = new Array();
+
+var bin = 0;
+var maxBinCount = 0;
+var histStatChoice = getHistStatChoice();
+//if (bc$("lnrelriskbox").checked) histStatChoice = "lnRR";
+
+	for(i=0; i<g_shuffleCount; i++) {
+		if (i==0) {
+			min = g_shuffleStats[i][histStatChoice];
+			max = g_shuffleStats[i][histStatChoice];
+		} else {
+			if (g_shuffleStats[i][histStatChoice] < min) min = g_shuffleStats[i][histStatChoice];
+			if (g_shuffleStats[i][histStatChoice] > max) max = g_shuffleStats[i][histStatChoice];
+		}
+		sum += g_shuffleStats[i][histStatChoice];
+		sumSq += Math.pow(g_shuffleStats[i][histStatChoice],2);
+	}
+	if (g_shuffleCount > 0) {
+		// Compute averages
+		avg = sum / g_shuffleCount;
+		// Compute shuffle std deviations
+		shuffleStdDev = Math.pow((g_shuffleCount * sumSq - Math.pow(sum,2)) / (g_shuffleCount*(g_shuffleCount-1)), 0.5);
+		// Compute ranges.
+		range = max - min;
+		// Compute histogram bin widths
+		binWidth = range / g_histogram.binCount;
+		// Compute histogram
+		// If min = 0 and max = 1 and binCount = 10, then binWidth = 0.10. 
+		// Bin 0 left-edge is 0, 1 left-edge is 0.1, ... bin 9 left-edge is 0.9, bin right-edge is 1.0. 
+		// If our convention is that bin goes from [left-edge, right-edge), we run into trouble with max.
+		// Our binCount(10) bins are numbered 0 to 9 (binCount-1), and (max-min)/binWidth = (1-0)/0.1 = 10.
+		// So if bin >= binCount, we set bin = binCount-1 to handle this case.
+		// Set midpoint for each bin, that's where we'll plot the points.
+		// Initialize count for each bin.
+		for(bin=0; bin < g_histogram.binCount; bin++) {
+			hist[bin] = {
+				left: min + bin * binWidth,
+				midPoint: min + (bin + 0.5) * binWidth,
+				right: min + (bin+1) * binWidth,
+				count: 0};
+		}
+		// If there's only one datapoint, then bin widths we'll be zero and we won't generate that first point.
+		// Instead, all bins will have same midpoint, so just increment count for first one and leave it at that.
+		if (binWidth == 0) {
+			hist[0].count = g_shuffleCount;
+			maxBinCount=g_shuffleCount;
+			binWidth = .1; //fix
+		}
+
+		if (binWidth > 0) {
+			for (i=0; i<g_shuffleCount; i++) {
+				// ChiSquared
+				bin = Math.floor((g_shuffleStats[i][histStatChoice] - min) / binWidth);
+				if (bin >= g_histogram.binCount) {
+					// Allow last bin to be [left-edge, right-edge] rather than [left-edge, right-edge).
+					bin = g_histogram.binCount-1;
+				}
+				// Increment count.
+				hist[bin].count++;
+				// Check for new max.
+				if (hist[bin].count > maxBinCount) {
+					maxBinCount = hist[bin].count;
+				}
+			}
+		}
+	}
+	return {
+		avg: avg, 
+		shuffleStdDev: shuffleStdDev, 
+		min: min, 
+		max: max, 
+		range: range, 
+		binWidth: binWidth, 
+		hist: hist, 
+		maxBinCount: maxBinCount, 
+	}
+}
+
+
+// Convert chart Y values (0 is at bottom) to canvas Y values (0 is at top).
+// Leave space at bottom for x-axis border.
+// Start by subtracting off minY, to make relative. Then multiply by chartToCanvasScaleY.
+// Subtract from canvas height, and leave space for x-axis border.
+function toCanvasY(plot, chartY) {
+	return (plot.canvasHeight - (chartY-plot.minY) * plot.chartToCanvasScaleY - plot.xBorderWidth);
+}
+
+// Convert canvas Y values (0 is at top) to chart Y values.
+// Handle space at bottom for x-axis border.
+// canvasY = canvasHeight - (chartY-minY) * chartToCanvasScaleY - xBorderWidth
+// so chartY = (canvasHeight - canvasY - xBorderWidth) / chartToCanvasScaleY + minY;
+function toChartY(plot, canvasY) {
+	if (plot.chartToCanvasScaleY > 0) {
+		return ((plot.canvasHeight - canvasY - plot.xBorderWidth) / plot.chartToCanvasScaleY + plot.minY);
+	} else {
+		return null;
+	}
+}
+
+// Convert chart X values to canvas X values (add on y-axis border width).
+// Start by subtracting off minX, to make relative. Then multiply by chartToCanvasScaleX.
+// Finally, add on border width to leave space for y-axis border.
+function toCanvasX(plot, chartX) {
+	return ((chartX-plot.minX) * plot.chartToCanvasScaleX + plot.yBorderWidth);
+}
+
+// Convert canvas X values to chart X values.
+// canvasX = (chartX-minX) * chartToCanvasScaleX + yBorderWidth
+// so chartX = (canvasX - yBorderWidth) / chartToCanvasScaleX + minX;
+function toChartX(plot, canvasX) {
+	if (plot.chartToCanvasScaleX > 0) {
+		return ((canvasX - plot.yBorderWidth) / plot.chartToCanvasScaleX + plot.minX);
+	} else {
+		return null;
+	}
+}
+
+function setPageLastModified() {
+var p = bc$("pageLastModified");  
+var lastModified = document.lastModified;
+
+	if (Date.parse(document.lastModified) > 0) {
+		p.innerHTML = "Page last modified " + lastModified.toLocaleString();
+	}
+	p.innerHTML +="<br> Copyright (c) 2012-2020 Beth and Frank Chance. <br>Duplication without the written permission of Beth and Frank Chance prohibited by federal law.";
+}
+
+function shufflePlotSetup(plot) {
+var canvas = bc$(plot.canvasName);  
+var ctx = canvas.getContext("2d");  
+
+	setSamplePlotMinMax(plot);
+	setPlotScale(plot);
+	drawAxes(plot, ctx);
+	writeXAxisTitle(plot, ctx);
+	writeYAxisTitle(plot, ctx);
+	writeXAxisLabels(plot, ctx);
+	writeYAxisLabels(plot, ctx);
+}
+
+function histogramSetup() {
+var canvas = bc$("histogram");  
+var ctx = canvas.getContext("2d");  
+
+	switch(getHistStatChoice()) {
+		case "CHISQ":
+			g_histogram.xTitle = t_shuffled[g_language] + " Chi-Squared";
+			break;
+		case "MAD":
+			g_histogram.xTitle = t_shuffled[g_language] + " MADs";
+			break;
+		case "MM":
+			g_histogram.xTitle = t_shuffled[g_language]  + " Max - Min";
+			break;
+		case "MAXTALLY":
+			g_histogram.xTitle = t_shuffled[g_language]  + " Max Tally";
+			break;
+		case "MINTALLY":
+			g_histogram.xTitle = t_shuffled[g_language]  + " Min Tally";
+			break;
+		case "PROPA":
+			g_histogram.xTitle = t_shuffled[g_language]  + " Proportion " + g_level[0];
+			break;
+
+	}
+	setHistogramMinMax();
+	setPlotScale(g_histogram);
+	drawAxes(g_histogram, ctx);
+	writeXAxisTitle(g_histogram, ctx);
+	writeYAxisTitle(g_histogram, ctx);
+	writeHistogramXAxisLabels(g_histogram, ctx);
+	writeYAxisLabels(g_histogram, ctx);
+}
+
+function writeHistogramXAxisLabels(plot, ctx) {
+var labelNum;
+var xBetweenLabels;
+var x;
+if (plot.maxX < 1) plot.xLabelDecimals = 2;
+if (plot.maxX > 5) plot.xLabelDecimals = 0;
+
+	ctx.fillStyle = "black";
+	ctx.textAlign = "center";
+	xBetweenLabels = getBetweenLabels(plot.minX, plot.maxX, plot.xLabelCount);
+	for (x=plot.minX; x <= plot.maxX; x += xBetweenLabels) {
+		ctx.fillText(x.toFixed(plot.xLabelDecimals).replace(".000000000".substring(0,plot.xLabelDecimals+1),""), 
+			toCanvasX(plot, x),toCanvasY(plot, plot.minY) + plot.xLabelCanvasOffset);
+	}
+}
+
+function getBetweenLabels(min, max, labelCount) {
+	// Compute exact y between labels.
+	var betweenLabels = (max - min)/(labelCount-1);
+	// To produce nice-looking numbers, e.g. 10, 20, 30 rather than 9.8, 18.6, etc:
+	// Compute log-base-10 of betweenLabels
+	var logBetween = Math.log(betweenLabels) / Math.log(10);
+	// Round down to closest integer. 
+	logBetween = Math.floor(logBetween);
+	// If we take 10 to the resulting power, this gives us a nice increment.
+	var yNiceIncrement = Math.pow(10,logBetween);
+	// Make betweenLabels a multiple of yNiceIncrement
+	if (betweenLabels < yNiceIncrement) {
+		// Force up to yNiceIncrement
+		betweenLabels = yNiceIncrement;
+	} else {
+		// Force down to a multiple of yNiceIncrement.
+		betweenLabels = yNiceIncrement * Math.floor(betweenLabels / yNiceIncrement);
+	}
+	return(betweenLabels);
+};
+
+
+function setSamplePlotMinMax(plot) {
+var stats = getObsStats(g_obsX);
+
+	// Debug: 
+	// bc$("Notes").innerHTML = "minX=" + stats.minX + " maxX="+stats.maxX;
+	// Set chart minimum and maximum x and y values.
+	// For x axis, hardcode to -1 to maxX + 1, e.g. leave one empty column on each end.
+	plot.minX = -1; 
+	plot.maxX = stats.maxX + 1;
+	// For y axis, hardcode to 0 to 110, leaving some space at top for "100" y-axis label.
+	plot.minY = 0;
+	plot.maxY = 110;
+}
+
+// Compute basic array stats... accept length as parameter in case we are reusing an array and don't have as many entries as are defined for array.
+// If attributeName is blank, use dataArray[i], otherwise use dataArray[i][attributeName].
+// If histBinCount > 0, then also compute histogram.
+// If minAtLeast specified, and min not less than minAtLeast, then set min = minAtLeast.
+// If maxAtLeast specified, and max not more than maxAtLeast, then set max = maxAtLeast.
+function getArrayStats(dataArray, arrayCount, attributeName, histBinCount, minAtLeast, maxAtLeast) {
+var dataValue = null;
+var min = null;
+var max = null;
+var range = 0;
+var sum = 0;
+var avg = 0;
+var sumSq = 0;
+var shuffleStdDev = 0;
+var binWidth = 0;
+var hist = new Array();
+var maxBinCount = 0;
+var bin = 0;
+var median = 0;
+
+	median = getMedian(dataArray);	
+	for (i=0; i<arrayCount; i++) {
+		if (attributeName == "") {
+			dataValue = dataArray[i];
+		} else {
+			dataValue = dataArray[i][attributeName]
+		}
+		if (i==0) {
+			min = dataValue;
+			max = dataValue;
+		} else {
+			if (dataValue < min) min = dataValue;
+			if (dataValue > max) max = dataValue;
+		}
+		sum += dataValue;
+		sumSq += Math.pow(dataValue,2);
+	}
+	if (minAtLeast != undefined) {
+		if (min > minAtLeast) {
+			// Force the min
+			min = minAtLeast;
+		}
+	}
+	if (maxAtLeast != undefined) {
+		if (max < maxAtLeast) {
+			// Force the max
+			max = maxAtLeast;
+		}
+	}
+	if (arrayCount > 0) {
+		shuffleStdDev = Math.pow((arrayCount * sumSq - Math.pow(sum,2)) / (arrayCount*(arrayCount-1)), 0.5);
+		avg = sum / arrayCount;
+		range = max - min;
+		if (histBinCount > 0) {
+			// Compute histogram bin width
+			binWidth = range / histBinCount;
+			// Compute histogram
+			// If min = 0 and max = 1 and binCount = 10, then binWidth = 0.10. 
+			// Bin 0 left-edge is 0, 1 left-edge is 0.1, ... bin 9 left-edge is 0.9, bin right-edge is 1.0. 
+			// If our convention is that bin goes from [left-edge, right-edge), we run into trouble with max.
+			// Our binCount(10) bins are numbered 0 to 9 (binCount-1), and (max-min)/binWidth = (1-0)/0.1 = 10.
+			// So if bin >= binCount, we set bin = binCount-1 to handle this case.
+			// Set midpoint for each bin, that's where we'll plot the points.
+			// Initialize structure for each bin.
+			for(bin=0; bin < histBinCount; bin++) {
+				hist[bin] = {
+					left: min + bin * binWidth,
+					midPoint: min + (bin + 0.5) * binWidth, 
+					right: min + (bin+1) * binWidth,
+					count: 0,
+					indexArray: new Array(),
+					valueArray: new Array()
+				};
+			}
+			// If there's only one datapoint (or all datapoints the same), then bin widths we'll be zero and we won't generate that first point.
+			// Instead, all bins will have same midpoint, so just increment count for first one and leave it at that.
+			if (binWidth == 0) {
+				// Setup indexArray[] and valueArray[] - all entries just point to corresponding index in dataArray.
+				for(var i=0; i<arrayCount; i++) {
+					if (attributeName == "") {
+						dataValue = dataArray[i];
+					} else {
+						dataValue = dataArray[i][attributeName]
+					}
+					hist[0].indexArray[i] = i;
+					hist[0].valueArray[i] = dataValue;
+				}
+				// Set count for this bin - just length of dataArray.
+				hist[0].count = arrayCount;
+				// Set max bin count - just length of dataArray.
+				maxBinCount = arrayCount;
+			}
+			if (binWidth > 0) {
+				for (i=0; i<arrayCount; i++) {
+					if (attributeName == "") {
+						dataValue = dataArray[i];
+					} else {
+						dataValue = dataArray[i][attributeName]
+					}
+					bin = Math.floor((dataValue - min) / binWidth);
+					if (bin >= histBinCount) {
+						// Allow last bin to be [left-edge, right-edge] rather than [left-edge, right-edge).
+						bin = histBinCount-1;
+					}
+					// Save the index value in indexArray
+					// This is required so that when user clicks on a point in the histogram, we can tie that particular histogram
+					// point back to original data that created it.
+					hist[bin].indexArray[hist[bin].count] = i;
+					// Save the data value
+					hist[bin].valueArray[hist[bin].count] = dataValue;
+					// Increment count.
+					hist[bin].count++;
+					// Check for new max.
+					if (hist[bin].count > maxBinCount) {
+						maxBinCount = hist[bin].count;
+					}
+				}
+			}
+		}
+	}
+	return {
+		min: min, max: max, range: range, sum: sum, avg: avg, sumSq: sumSq, shuffleStdDev: shuffleStdDev,
+		binWidth: binWidth, hist: hist, maxBinCount: maxBinCount, median: median
+	}
+}
+
+// Compute median for an array
+function getMedian(dataArray) {
+    dataArray.sort( function(a,b) {return a - b;} );
+    var half = Math.floor(dataArray.length/2);
+    if(dataArray.length % 2) {
+        return dataArray[half];
+	} else {
+        return (dataArray[half-1] + dataArray[half]) / 2.0;
+	}
+}
+
+function setHistogramMinMax() {
+var histStatChoice = getHistStatChoice();
+//if (bc$("lnrelriskbox").checked) histStatChoice = "lnRR";
+//var obsstats = getObsStats(g_noShuffleIndex);
+var obsstats = getObsStats(g_obsX);
+
+	if (g_shuffleCount > 0) {
+		// Get stats across shuffles, without forcing the min/max, for initial setting of graph's min/max.
+		var shuffleStats = getArrayStats(g_shuffleStats, g_shuffleCount, histStatChoice, g_histogram.binCount);
+		// Force to 10ths. 
+//		if (shuffleStats.min < 0) g_histogram.minX = Math.floor((shuffleStats.min - 0.20*shuffleStats.range) * 10) / 10;
+//		else g_histogram.minX = -.0;
+			
+//			g_histogram.minX = Math.floor((shuffleStats.min - 0.20*shuffleStats.range)*10)/10;
+			g_histogram.minX = Math.floor(shuffleStats.min*100)/100;
+		var extremeAs = parseFloat(bc$("countInput").value);
+
+		if (histStatChoice == "CHISQ" || histStatChoice == "MAD" || histStatChoice =="MM") 
+			g_histogram.minX = Math.max(g_histogram.minX, 0);
+			//			g_histogram.maxX = Math.ceil((shuffleStats.max + 0.20*shuffleStats.range) * 10) / 10;
+			if (!isNaN(extremeAs)) g_histogram.maxX = Math.max(Math.ceil(shuffleStats.max*100)/100, extremeAs);
+			else g_histogram.maxX = Math.ceil(shuffleStats.max*100)/100;
+			g_histogram.binCount = 30;
+			g_histogram.minY = 0;
+			// Rebuild the histogram forcing min/max to graph's min/max, that way we can tell how high the histogram goes.
+			shuffleStats = getArrayStats(g_shuffleStats, g_shuffleCount, histStatChoice, g_histogram.binCount, g_histogram.minX, g_histogram.maxX);
+			g_histogram.maxY = 1.2 * shuffleStats.maxBinCount;
+		} else {
+			// No shuffles yet
+			g_histogram.maxX = 1;
+			g_histogram.minY = 0;
+			g_histogram.maxY = 10;
+			g_histogram.minX= -1; 
+		}
+	// Force histogram to always be at least 25 high... keeps it from jumping too much at beginning.
+	if (g_histogram.maxY < 25) {
+		g_histogram.maxY = 25;
+	}
+	// If minX = maxX, set min/max X values so histogram looks reasonable.
+	if (g_histogram.minX == g_histogram.maxX) {
+		g_histogram.minX -= 1;
+		g_histogram.maxX += 1;
+	}
+//	if (!isNaN(extremeAs)) {
+		// Extend min/max if extremeAs is beyond either boundary
+//		if (extremeAs < g_histogram.minX) {
+//			g_histogram.minX = extremeAs;
+//		}
+//		if (extremeAs > g_histogram.maxX) {
+//			g_histogram.maxX = extremeAs;
+//			g_histogram.binCount = 2*(g_histogram.maxX - g_histogram.minX);
+//			shuffleStats = getArrayStats(g_shuffleStats, g_shuffleCount, histStatChoice, g_histogram.binCount, g_histogram.minX, g_histogram.maxX);
+//			g_histogram.maxY = 1.2 * shuffleStats.maxBinCount;
+//		}
+//	}		
+}
+
+function setDensityPlotMinMax(obsstat) {
+			var extremeAs = obsstat.toFixed(3);
+			var df = (g_numLevels-1);
+			g_densityPlot.maxX = Math.max(4*Math.sqrt(2*df), extremeAs + 1);
+			var mode = Math.max(df-2, .01);
+			g_densityPlot.maxY = getChiDensity(mode, df)*1.01;
+//			g_histogram.minY = 0;
+}
+
+function setPlotScale(plot) {
+	// Set scaling factors, to go from chart to canvas.
+	if (plot.maxX > plot.minX) {
+		plot.chartToCanvasScaleX = plot.usableCanvasWidth / (plot.maxX - plot.minX);
+	} else {
+		plot.chartToCanvasScaleX = 1;
+	}
+	if (plot.maxY > plot.minY) {2940
+		plot.chartToCanvasScaleY = plot.usableCanvasHeight / (plot.maxY - plot.minY);
+	} else {
+		plot.chartToCanvasScaleY = 1;
+	}
+}
+
+function drawAxes(plot, ctx) {
+	// Draw x-axis and y-axis
+	// Note that it is important to use beginPath() and closePath(), otherwise later changes to strokeStyle
+	// (e.g. color changes) will apply to axis lines!
+	ctx.strokeStyle = "black"; 
+	ctx.beginPath();
+	ctx.moveTo(toCanvasX(plot, plot.minX),toCanvasY(plot, plot.minY));
+	ctx.lineTo(toCanvasX(plot, plot.maxX),toCanvasY(plot, plot.minY));
+	// stroke does the work of drawing the line, without this the user will not be able to see it.
+	ctx.stroke();
+	ctx.moveTo(toCanvasX(plot, plot.minX),toCanvasY(plot, plot.minY));
+	ctx.lineTo(toCanvasX(plot, plot.minX),toCanvasY(plot, plot.maxY));
+	ctx.stroke();
+	ctx.closePath();
+}
+
+function writeXAxisTitle(plot, ctx) {
+	// Add x-axis title
+	ctx.fillStyle = "black";
+	ctx.textAlign = "center";
+	ctx.fillText(plot.xTitle, toCanvasX(plot, plot.minX + (plot.maxX-plot.minX)/2.0),toCanvasY(plot, plot.minY) + plot.xTitleCanvasOffset);
+}
+
+function writeYAxisTitle(plot, ctx) {
+	// Add y-axis title -- more complex because the text is rotated.
+	ctx.fillStyle = "black";
+	ctx.save();
+	ctx.translate(toCanvasX(plot, plot.minX) + plot.yTitleCanvasOffset,toCanvasY(plot, plot.minY + (plot.maxY-plot.minY)/2.0));
+	ctx.rotate(-Math.PI/2);
+	ctx.textAlign = "center";
+	ctx.fillText(plot.yTitle, 0, 0);
+	ctx.restore();
+}
+
+function writeXAxisLabels(plot, ctx) {
+var labelNum;
+var xBetweenLabels;
+var labelInfo;
+
+	ctx.fillStyle = "black";
+	ctx.textAlign = "center";
+	// Format so that we get have xLabelCount+1 intervals along the x-axis, e.g. we have space before first label and after last label.
+	// (interval)(Label 1)(interval)(Label 2)...(Label xLabelCount)(interval)
+	xBetweenLabels = (plot.maxX - plot.minX)/(plot.xLabelCount+1);
+	// Add x-axis labels.
+	for (labelNum=1; labelNum <= plot.xLabelCount; labelNum++) {
+		labelInfo = plot.xLabelFct(plot, labelNum, xBetweenLabels);
+		ctx.fillText(labelInfo.labelXText, labelInfo.canvasX, labelInfo.canvasY);
+	}
+}
+
+function stdPlotXLabelFct(plot, labelNum, xBetweenLabels) {
+	var x = plot.minX + labelNum * xBetweenLabels;
+	var labelXText = x.toFixed(plot.xLabelDecimals);
+	var canvasX = toCanvasX(plot, x);
+	var canvasY = toCanvasY(plot, plot.minY) + plot.xLabelCanvasOffset;
+	return {
+		x: x,
+		labelXText: labelXText,
+		canvasX: canvasX,
+		canvasY: canvasY
+	}
+}
+
+function chiPlotXLabelFct(plot, labelNum, xBetweenLabels) {
+	var x = labelNum-1;
+	var labelXText = g_level[labelNum-1]; // labelNum is [1,g_numLevels], so subtract one to get zero-based index.
+//	labelXText = "george" + labelNum;
+	var canvasX = toCanvasX(plot, x);
+	var canvasY = toCanvasY(plot, plot.minY) + plot.xLabelCanvasOffset;
+	return {
+		x: x,
+		labelXText: labelXText,
+		canvasX: canvasX,
+		canvasY: canvasY
+	}
+}
+
+function writeYAxisLabels(plot, ctx) {
+var labelNum;
+var yBetweenLabels;
+var y;
+var labelY;
+var labelInfo;
+
+	ctx.fillStyle = "black";
+	// Save context and then translate and rotate, so we can draw rotate numbers.
+	ctx.save();
+	// Translate so that origin is (toCanvasX(plot, plot.minX) + plot.yLabelCanvasOffset,toCanvasY(plot, plot.minY)).
+	ctx.translate(toCanvasX(plot, plot.minX) + plot.yLabelCanvasOffset,toCanvasY(plot, plot.minY));
+	// Rotate by 90 degrees.
+	ctx.rotate(-Math.PI/2);
+	ctx.textAlign = "center";
+	// Format so that we get have yLabelCount+1 intervals along the y-axis, e.g. we have space before first label and after last label.
+	// (interval)(Label 1)(interval)(Label 2)...(Label yLabelCount)(interval)
+	yBetweenLabels = getBetweenLabels(plot.minY, plot.maxY, plot.yLabelCount);
+	//(plot.maxY - plot.minY)/(plot.yLabelCount+1);
+	// Add y-axis labels.
+	for (labelNum=1; labelNum <= plot.yLabelCount; labelNum++) {
+		labelInfo = plot.yLabelFct(plot, labelNum, yBetweenLabels);
+		// Now that we have rotated, specify y as the x, and 0 as the y.
+		ctx.fillText(labelInfo.labelYText, labelInfo.canvasY, 0);
+	}
+	// Restore original context
+	ctx.restore();
+}
+function getBetweenLabels(min, max, labelCount) {
+	// Compute exact y between labels.
+	var betweenLabels = (max - min)/(labelCount-1);
+	// To produce nice-looking numbers, e.g. 10, 20, 30 rather than 9.8, 18.6, etc:
+	// Compute log-base-10 of betweenLabels
+	var logBetween = Math.log(betweenLabels) / Math.log(10);
+	// Round down to closest integer. 
+	logBetween = Math.floor(logBetween);
+	// If we take 10 to the resulting power, this gives us a nice increment.
+	var yNiceIncrement = Math.pow(10,logBetween);
+	// Make betweenLabels a multiple of yNiceIncrement
+	if (betweenLabels < yNiceIncrement) {
+		// Force up to yNiceIncrement
+		betweenLabels = yNiceIncrement;
+	} else {
+		// Force down to a multiple of yNiceIncrement.
+		betweenLabels = yNiceIncrement * Math.floor(betweenLabels / yNiceIncrement);
+	}
+	return(betweenLabels);
+}
+
+function stdPlotYLabelFct(plot, labelNum, yBetweenLabels) {
+	var y = labelNum * yBetweenLabels; // this is still in terms of chart Y, and relative to plot.minY.
+	var labelY = plot.minY + y; // Make absolute in terms of chart Y.
+	var labelYText = labelY.toFixed(1).replace(".0","");
+	// Scale by plot.chartToCanvasScaleY to convert to canvas Y.
+	var canvasY = y * plot.chartToCanvasScaleY; 
+	return {
+		y: y,
+		labelYText: labelYText,
+		canvasY: canvasY
+	}
+}
+
+function chiPlotYLabelFct(plot, labelNum, yBetweenLabels) {
+	var y = (labelNum-1) * 100 / (plot.yLabelCount-1); // If labelNum is [1,6], we want to display 0, 20, 40, 60, 80, 100.
+	var labelYText = y.toFixed(1).replace(".0",""); 
+	var canvasY = toCanvasY(plot, plot.maxY-y); 
+	return {
+		y: y,
+		labelYText: labelYText,
+		canvasY: canvasY
+	}
+}
+
+function writeUpperLeftText(plot, ctx, row, text) {
+var prettyXOffset = 5; // Shift text to right a bit to keep it off y-axis.
+var prettyYOffset = 10; // Shift text down a bit to make it look nice.
+var rowYSize = 15; // Decent-looking size of row of text.
+	// Add text in upper left of plot
+	ctx.fillStyle = "black";
+	ctx.textAlign = "left";
+	ctx.fillText(text, toCanvasX(plot, plot.minX) + prettyXOffset,toCanvasY(plot, plot.maxY) + prettyYOffset + row * rowYSize);
+}
+
+function writeUpperRightText(plot, ctx, row, text) {
+var prettyXOffset = 5; // Shift text to left a bit to keep it off right side
+var prettyYOffset = 10; // Shift text down a bit to make it look nice.
+var rowYSize = 15; // Decent-looking size of row of text.
+	// Add text in upper right of plot
+	//ctx.fillStyle = "black";
+	ctx.textAlign = "right";
+	ctx.fillText(text, toCanvasX(plot, plot.maxX) - prettyXOffset,toCanvasY(plot, plot.maxY) + prettyYOffset + row * rowYSize);
+}
+
+function drawSamplePlot(plot, shuffleIndex) {
+	var canvas = bc$(plot.canvasName);  
+	var ctx = canvas.getContext("2d");
+	var stats = getObsStats(shuffleIndex);
+	var cumulPct = 0.0;
+
+	
+		for (level = 0; level < g_numLevels;  level ++){
+					// Draw a black box to height cumulPct. Center left-to-right at x=level.
+					ctx.strokeStyle = "black"; 
+					ctx.beginPath();
+					ctx.moveTo(toCanvasX(plot, level)-10,toCanvasY(plot, 0));
+					ctx.lineTo(toCanvasX(plot, level)-10,toCanvasY(plot, stats.levelOutcomePct[level]));
+					ctx.lineTo(toCanvasX(plot, level)+10,toCanvasY(plot, stats.levelOutcomePct[level]));
+					ctx.lineTo(toCanvasX(plot, level)+10,toCanvasY(plot, 0));
+					// stroke does the work of drawing the line, without this the user will not be able to see it.
+					ctx.stroke();
+					ctx.closePath();
+					ctx.fillStyle = "rgba(205, 205, 205, 0.2)";  
+					ctx.fillRect (toCanvasX(plot, level)-10, toCanvasY(plot, 0), 20, toCanvasY(plot, cumulPct) - toCanvasY(plot, 0)); 
+					
+					if(canvas.id == "simSamplePlot"){
+						ctx.strokeStyle="#DB0000";
+						ctx.beginPath();
+						ctx.moveTo(toCanvasX(plot, level)-10,toCanvasY(plot, g_propValues[level]*100));
+//						stats.levelOutcomeExpectedCount[level]/g_numObs*100));
+						ctx.lineTo(toCanvasX(plot, level)+10,toCanvasY(plot, g_propValues[level]*100));
+						ctx.stroke();
+						ctx.closePath();
+					}
+					
+		}
+}
+		
+	
+
+
+function getZ(){
+	var calcz=0;
+	var noScrambleStats = getObsStats(g_noScrambleIndex);
+	
+	
+	var dfsd1 = Math.pow(noScrambleStats.levelSD[0],2)/noScrambleStats.levelCount[0];
+	var dfsd2 = Math.pow(noScrambleStats.levelSD[1],2)/noScrambleStats.levelCount[1];
+	var dfnum = Math.pow(dfsd1+ dfsd2,2)
+	var dfdenom = Math.pow(dfsd1,2)/(noScrambleStats.levelCount[0]-1) + Math.pow(dfsd2,2)/(noScrambleStats.levelCount[1]-1);
+	calcdf = dfnum/dfdenom;
+	return {
+		calcdf: calcdf
+		}
+}
+
+function drawDensityPlot(minX, maxX, fillStyle, strokeStyle, addLine, df) {
+var canvas = bc$("densityPlot");  
+var ctx = canvas.getContext("2d");
+var plainStyle1 = "#B0C4DE";
+var plainStyle2 = "#B0C4DE"; //"#00FF7F";
+//var plainStyle = "#87ceeb";
+var highlightStyle = "blue";
+var highlightStyleBetween = "#F08080";
+var alpha = 1;
+
+	// Delta - compute independent of minX/maxX we are using for this particular density.
+	var xDelta = (g_densityPlot.maxX - g_densityPlot.minX) / g_densityPlot.bars;
+	if (xDelta == 0) {
+		// Nothing to do
+		return;
+	}
+	// Set canvas globalAlpha value -- may not work on some browsers... will it fail with an error or just pass over this line? Need to test!
+	ctx.globalAlpha = alpha;
+	// Set fill style (interior color).
+	ctx.fillStyle = fillStyle;
+	if (strokeStyle != "") {
+		// Set stroke style (line color)
+		ctx.strokeStyle = strokeStyle;
+		// Set lineWidth
+		ctx.lineWidth = 1;
+	}
+	// Begin path surrounding our region
+	ctx.beginPath();
+	// Move to (minX,0)
+	ctx.moveTo(toCanvasX(g_densityPlot, minX), toCanvasY(g_densityPlot, g_densityPlot.minY));
+	// Draw line (minX,density(minX))
+	ctx.lineTo(toCanvasX(g_densityPlot, minX), toCanvasY(g_densityPlot, getChiDensity(minX, df, 0)));
+	// Set starting point for left edge
+	var xLeft = minX;
+	while (xLeft < maxX) {
+		var xRight = xLeft + xDelta;
+		// Draw line to density at xRight
+		ctx.lineTo(toCanvasX(g_densityPlot, xRight), toCanvasY(g_densityPlot, getChiDensity(xRight, df,0)));
+		// Move right one bar
+		xLeft = xRight;
+	}
+	// Draw line to (maxX, 0)
+	ctx.lineTo(toCanvasX(g_densityPlot, maxX), toCanvasY(g_densityPlot, g_densityPlot.minY));
+	ctx.closePath();
+	ctx.fill();
+	if (strokeStyle != "") {
+		ctx.stroke();
+	}
+	if (addLine){
+		ctx.beginPath();
+		ctx.moveTo(toCanvasX(g_densityPlot, minX), toCanvasY(g_densityPlot, 0));// - yHeightPixels / 2);
+		ctx.lineTo(toCanvasX(g_densityPlot, minX), toCanvasY(g_densityPlot, 1));// + yHeightPixels / 2);
+		ctx.stroke();
+		ctx.closePath();
+	}
+
+}
+
+function drawHistogram() {
+var canvas = bc$("histogram");  
+var ctx = canvas.getContext("2d");
+var binCount = 0;
+var countSamples = g_countSamples;
+var countInput = parseFloat(bc$("countInput").value);
+var countOperator = bc$("countOperator").value.toUpperCase();
+var subBinCount = 100;
+var subBinWidth = 0;
+var subBinLeft = 0;
+var subBinRight = 0;
+var subBinMid = 0;
+var density = 0;
+var degreesOfFreedom = (g_numLevels-1);
+var histStatChoice = getHistStatChoice();
+var noShuffleStats = getObsStats(g_obsX);
+var noShuffleStat = getHistStat(noShuffleStats);
+var bricksVersusRectangleCutoff = 100; // Number of shuffles below which we show bricks building up, and above which we show rectangles.
+var stats = getShuffleStats();
+
+g_lastGetShuffleStats = getShuffleStats();
+
+var hist = null;
+
+var lastCanvasX = 0;
+var lastCanvasY = 0;
+
+	if (g_numObs == 0) {
+		// Nothing to do.
+		return;
+	}
+	// Force min/max to be graph min/max, so we don't get tiny little bins on first few shuffles
+	//if (bc$("lnrelriskbox").checked) histStatChoice = "lnRR";
+	var shuffleStats = getArrayStats(g_shuffleStats, g_shuffleCount, histStatChoice, g_histogram.binCount, g_histogram.minX, g_histogram.maxX);
+	var hist = shuffleStats.hist;
+	ctx.fillStyle = "grey";
+	writeUpperRightText(g_histogram, ctx, 0, t_mean[g_language]  + stats.avg.toFixed(3));
+	writeUpperRightText(g_histogram, ctx, 1, t_SD[g_language]  + stats.shuffleStdDev.toFixed(3));
+	if (g_savedGetShuffleStats != null & bc$("showGhost").checked){
+		ctx.fillStyle = "black";
+		writeUpperRightText(g_histogram, ctx, 3, t_mean[g_language] + g_savedGetShuffleStats.avg.toFixed(3));
+		writeUpperRightText(g_histogram, ctx, 4, t_SD[g_language] + g_savedGetShuffleStats.shuffleStdDev.toFixed(3));
+		ctx = canvas.getContext("2d");
+		}
+	bc$("cellNumberofShufflesTotal").innerHTML=t_TotalShuffles[g_language] + " = " + g_shuffleCount;
+	var diffHypoutput = 0;
+	var mDiff = noShuffleStats.levelOutcomeCount[0];
+	diffHypoutput=0;
+	//if (countInput != NaN)  diffHypoutput = smallerpvalue(g_numObs, mDiff, noShuffleStats.levelCount[0],x1);		
+	// Loop through all the histogram bins.
+	if (g_savedGetShuffleStats != null & bc$("showGhost").checked){
+		for (bin=0; bin <  g_savedGetShuffleStats.hist.length; bin++){
+		
+			binCount = g_savedGetShuffleStats.hist[bin].count;
+		
+			for (var i=0; i < binCount; i++) {	
+				ctx.strokeStyle = "black";
+				ctx.beginPath();
+				ctx.rect(toCanvasX(g_histogram, g_savedGetShuffleStats.hist[bin].left)-3,
+					toCanvasY(g_histogram, i),
+					toCanvasX(g_histogram, g_savedGetShuffleStats.binWidth) - toCanvasX(g_histogram, 0),
+					toCanvasY(g_histogram, i+1) - toCanvasY(g_histogram, i));
+				ctx.fillStyle = "grey";
+				ctx.fill();
+				ctx.closePath();
+			}
+		}
+	}
+	
+	for(bin=0; bin < hist.length; bin++) {
+
+		binCount = hist[bin].count;
+		
+		for (var i=0; i < binCount; i++) {
+			
+			var fillStyle = getHistFillStyle(noShuffleStats, countSamples, countOperator, Math.round(1000*hist[bin].valueArray[i])/1000, countInput, "silver", "#DB0000",
+				countInput, diffHypoutput); 
+//				10, 0);
+			ctx.beginPath();
+			// rect(x,y,width,height)
+			ctx.rect(toCanvasX(g_histogram, hist[bin].left),
+				toCanvasY(g_histogram, i),
+				toCanvasX(g_histogram, shuffleStats.binWidth) - toCanvasX(g_histogram, 0),
+				toCanvasY(g_histogram, i+1) - toCanvasY(g_histogram, i));
+			// Fill the interior
+			ctx.fillStyle = fillStyle;
+			ctx.fill();
+		
+		}
+		// Draw left vertical line and right vertical line, to separate the bars.
+		ctx.lineWidth = 1;
+		ctx.strokeStyle = "grey";
+		ctx.beginPath();
+		ctx.moveTo(toCanvasX(g_histogram, hist[bin].left), toCanvasY(g_histogram, 0));
+		ctx.lineTo(toCanvasX(g_histogram, hist[bin].left), toCanvasY(g_histogram, binCount));
+		ctx.stroke();
+		ctx.closePath();
+		ctx.beginPath();
+		ctx.lineTo(toCanvasX(g_histogram, hist[bin].right), toCanvasY(g_histogram, binCount));
+		ctx.lineTo(toCanvasX(g_histogram, hist[bin].right), toCanvasY(g_histogram, 0));
+		ctx.stroke();
+		ctx.closePath();
+		ctx.beginPath();
+		ctx.lineTo(toCanvasX(g_histogram, hist[bin].left), toCanvasY(g_histogram, binCount));
+		ctx.lineTo(toCanvasX(g_histogram, hist[bin].right), toCanvasY(g_histogram, binCount));
+		ctx.stroke();
+		ctx.closePath();
+		if (g_shuffleCount <= bricksVersusRectangleCutoff) {
+			// Draw horizontal white lines at top of each "brick" so we get appearance of bricks piling up as shuffles are added.
+			for (var i=0; i < binCount; i++) {
+				ctx.lineWidth = 1;
+				ctx.strokeStyle = "grey";
+				ctx.beginPath();
+				ctx.moveTo(toCanvasX(g_histogram, hist[bin].left), toCanvasY(g_histogram, i+1));
+				ctx.lineTo(toCanvasX(g_histogram, hist[bin].right), toCanvasY(g_histogram, i+1));
+				ctx.stroke();
+				ctx.closePath();				
+			}
+		}
+		for (var i=0; i < binCount; i++) {
+			var showPoint = false;
+			// Save center point for this histogram point so if user clicks near it, we can tie it back to the original shuffle
+			// Get the index into g_shuffleStats for this point
+			var index = hist[bin].indexArray[i];
+			// Save chart X and Y coordinates
+			g_shuffleStats[index].histogramChartX = hist[bin].midPoint;
+			g_shuffleStats[index].histogramChartY = i+.5;
+			// If displaying highlighted point, then change color and size, but just for this point
+			// Defaults.
+			ctx.fillStyle = fillStyle;
+			if (index == g_shuffleStatsSelectedIndex) {
+				// Displaying selected point, change color and size to highlight it
+				ctx.fillStyle = "blue";
+				showPoint = true;
+			}
+			if (g_shuffleStatsSelectedIndex == null && index == g_shuffleStats.length - 1) {
+				// There is no selected point, and this is the most recent shuffle, change color and size to highlight it.
+				ctx.fillStyle = "blue";
+				showPoint = true;
+			}
+			// fillRect(x,y,width,height)
+			if (showPoint) {
+				ctx.fillRect(toCanvasX(g_histogram, hist[bin].left),toCanvasY(g_histogram, i),
+				toCanvasX(g_histogram, hist[bin].right)-toCanvasX(g_histogram, hist[bin].left),
+				toCanvasY(g_histogram, 1)-toCanvasY(g_histogram, 0)) ;
+			}
+		}
+		if ((histStatChoice == "CHISQ" && bc$("overlayF").checked && g_numObs > 2) || ((histStatChoice == "DIFF" || histStatChoice == "lnRR") && bc$("overlayZ").checked && g_numObs > 2)) {		
+		
+			// Draw theoretical F density, as a bar, behind the dots for the histogram
+			// Question - can we approximate density for this histogram bar by taking cdf(right edge of bar) - cdf(left edge of bar).
+			// Then can we scale it by multiplying by g_shuffleCount?
+			// To make theoretical graph smoother, break each histogram bin into 10 sub-bins and loop through them.
+			// Need to multiply by subBinCount for proper scaling.
+			// Also need to adjust for having empty bins?
+			subBinWidth = (hist[bin].right - hist[bin].left) / subBinCount;
+			// For density curve, start with default of light grey, then change to light red if we are counting and the point fits the count criteria.
+			ctx.fillStyle = getHistFillStyle(noShuffleStats, countSamples, countOperator, hist[bin].midPoint, countInput, "lightblue", "#FFDEAD",
+				countInput, diffHypoutput); 
+			ctx.strokeStyle = getHistFillStyle(noShuffleStats, countSamples, countOperator, hist[bin].midPoint, countInput, "blue", "#DB0000",
+				countInput, diffHypoutput);
+			ctx.lineWidth = .5;
+			ctx.beginPath();
+			for(subBin=0; subBin < subBinCount; subBin++) {
+				subBinLeft = hist[bin].left + subBin * subBinWidth;
+				subBinRight = hist[bin].left + (subBin+1) * subBinWidth;
+				subBinMid = hist[bin].left + (subBin+0.5) * subBinWidth;
+				//tDensity = gettCDF(g_numObs-2, subBinRight) - gettCDF(g_numObs-2, subBinLeft);
+				if( histStatChoice == "CHISQ") density = getchisqCDF(subBinRight, degreesOfFreedom) - getchisqCDF(subBinLeft, degreesOfFreedom);
+				else if (histStatChoice == "lnRR") density = normcdf(subBinRight/noShuffleStats.SDlnrisk) - normcdf(subBinLeft/noShuffleStats.SDlnrisk);
+				else {
+					density = normcdf(subBinRight/noShuffleStats.SDdiff) - normcdf(subBinLeft/noShuffleStats.SDdiff);
+				}
+				// Scale so density matches histogram.
+				if (histStatChoice == "CHISQ" || histStatChoice == "lnRR")	density *= g_shuffleCount * subBinCount ;
+				else 	density *= g_shuffleCount * subBinCount *2.0 ;
+				ctx.fillRect(toCanvasX(g_histogram, subBinLeft),toCanvasY(g_histogram, 0),
+				toCanvasX(g_histogram, subBinRight) - toCanvasX(g_histogram, subBinLeft),
+				toCanvasY(g_histogram, density) - toCanvasY(g_histogram, 0));
+				// If first sub-bin of first bin, move to point, else make line to it from last point
+				if (bin == 0 && subBin == 0) {
+					ctx.moveTo(toCanvasX(g_histogram, subBinMid), toCanvasY(g_histogram, density));
+				} else {
+					if (subBin == 0) {
+						ctx.moveTo(lastCanvasX, lastCanvasY);
+					}
+					ctx.lineTo(toCanvasX(g_histogram, subBinMid), toCanvasY(g_histogram, density));
+				}
+				lastCanvasX = toCanvasX(g_histogram, subBinMid);
+				lastCanvasY = toCanvasY(g_histogram, density);
+			}
+			ctx.stroke();
+			ctx.closePath();
+		}
+	}
+	if (countSamples) {
+		// Confirm numeric countInput
+		if (isNaN(countInput)) {
+			// Force off counting
+			countSamples = false;
+		}else {
+			// Draw vertical line at countInput
+			ctx.strokeStyle = "#DB0000";
+			ctx.lineWidth = 1;
+			ctx.beginPath();
+			ctx.moveTo(toCanvasX(g_histogram, countInput), toCanvasY(g_histogram,0));
+			ctx.lineTo(toCanvasX(g_histogram, countInput), toCanvasY(g_histogram,g_histogram.maxY));
+			ctx.stroke();
+			if (countOperator == "BEYOND") {
+				var upperCount = 0;
+				var lowerCount = 0;
+				switch (histStatChoice){
+							case "RR":
+							case "CHISQ":
+								if (countInput > 1) {
+									lowerCount = 1/countInput;
+									upperCount = countInput;
+								}else {
+									lowerCount = countInput;
+									upperCount = 1/countInput;
+								}
+								break;
+							case "PROPA": 
+								lowerCount = g_propValues[0] - Math.abs(countInput - g_propValues[0]);
+								upperCount = g_propValues[0] + Math.abs(countInput - g_propValues[0]);
+								break;
+						
+				}
+				ctx.beginPath();
+				ctx.moveTo(toCanvasX(g_histogram, upperCount), toCanvasY(g_histogram,0));
+				ctx.lineTo(toCanvasX(g_histogram, upperCount), toCanvasY(g_histogram,g_histogram.maxY));
+				ctx.stroke();
+				ctx.beginPath();
+				ctx.moveTo(toCanvasX(g_histogram, lowerCount), toCanvasY(g_histogram,0));
+				ctx.lineTo(toCanvasX(g_histogram, lowerCount), toCanvasY(g_histogram,g_histogram.maxY));
+				ctx.stroke();
+			
+			}
+		}
+	}
+	if (countSamples && g_shuffleCount > 0) {
+		// Compute counts and fraction, put that into countSamplesOutput paragraph.
+		var stat = 0;
+
+		var count = 0;
+		var fraction = 0;
+		var compare = 0;
+		var warning = 0;
+		// Now we look at original data (rather than just histogram midpoints) to come up with counts.
+		for(i=0; i<g_shuffleCount; i++) {
+			stat = g_shuffleStats[i][histStatChoice];
+			stat = Math.round(stat*100000)/100000;
+			switch (countOperator) {
+				case "GREATER THAN":
+					if (stat>= countInput) {
+						count++;
+					}
+					break;
+				case "LESS THAN":
+					if (stat <= countInput) {
+						count++;
+					}
+					if ((histStatChoice != "DIFF") & (histStatChoice != "RR") & (histStatChoice != "MINTALLY")& (histStatChoice != "XCOUNT") & (histStatChoice != "PROPA")) warning = 1;
+					//want a warning if try to count below with any of the others
+					break;
+				case "BEYOND":
+					switch (histStatChoice){
+						case "RR":
+						case "CHISQ":
+							if (countInput > 1) {
+								if (stat >= countInput || stat <= 1/countInput) count ++;
+							}
+							else if (stat <= countInput || stat >= 1/countInput) count ++;
+							if (histStatChoice == "CHISQ") warning = 1;
+							break;
+						case "PROPA":
+							if (countInput > stats.avg) {
+								if (stat >= countInput || stat <= (stats.avg - (Math.abs(stats.avg - countInput)))) count ++;
+								}
+							else {
+								if ((stat <= countInput || stat >= (stats.avg + (Math.abs(stats.avg - countInput))))) count ++;
+							}
+							break;
+						default:
+							if (stat >= Math.abs(countInput) || stat <= -1 * Math.abs(countInput)) count ++;
+							warning = 1;
+							//want a warning if try to count beyond 
+							break;	
+					}
+					break;
+				default:
+					break;
+			}			
+		}
+		fraction = count / g_shuffleCount;
+		bc$("countSamplesOutput").innerHTML = "<font color = #DB0000>" + t_count[g_language] + " = " + count + "/" + g_shuffleCount + " (" + fraction.toFixed(4)+")" + "</font>";
+		bc$("countSamplesNotes").innerHTML = "";
+		// If user specific an input value for counting that is not close to the statistic for the original input data, give a warning
+		// Ensure that input they entered is within 0.01 of statistic for original input data
+		
+		if (Math.abs(countInput - noShuffleStat) > 0.01) {
+			bc$("countSamplesNotes").innerHTML = "<font color=#DB0000>"
+				+ "Warning: Your input does not match your original data.";
+				+ "</font>";
+		} else if (warning == 1) {
+					bc$("countSamplesNotes").innerHTML = "<font color=#DB0000>"
+				+ "Warning: Your direction does not match your choice of statistic.";
+				+ "</font>";
+				}
+		
+	} else {
+		bc$("countSamplesOutput").innerHTML = "";
+		bc$("countSamplesNotes").innerHTML = "";
+	}
+}
+
+
+function getHistFillStyle(noShuffleStats, countSamples, countOperator, midPoint, countInput, defaultStyle, highlightStyle, countInput, diffHypoutput) {
+var returnStyle = defaultStyle;
+var histStatChoice = getHistStatChoice();
+//if (bc$("lnrelriskbox").checked) histStatChoice = "lnRR";
+var compare = 0;
+	// Decide if we should use highlight color or default color, based on the midPoint we are plotting and the count conditions.
+	if (countSamples) {
+		switch (countOperator) {
+			case "GREATER THAN":
+				if (midPoint >= countInput) {
+					returnStyle = highlightStyle;
+				}
+				break;
+			case "LESS THAN":
+				if (midPoint <= countInput) {
+					returnStyle = highlightStyle;
+				}
+				break;
+			case "BEYOND": 
+				switch (histStatChoice){
+					case "PROPA":
+						if (midPoint >= g_propValues[0]+ Math.abs(countInput - g_propValues[0])) returnStyle = highlightStyle;
+						if (midPoint <= g_propValues[0]- Math.abs(countInput - g_propValues[0])) returnStyle = highlightStyle;
+						break;
+					default:
+						if (midPoint >= Math.abs(countInput) || midPoint <= -1 * Math.abs(countInput)) returnStyle = highlightStyle;
+						break;	
+					}
+				break;
+			default:
+				break;
+		}
+	}
+	return(returnStyle);
+}
+
+// Clear the shufflePlot and redraw axes
+function resetSamplePlot(plot) {
+ var canvas = bc$(plot.canvasName);  
+ var ctx = canvas.getContext("2d");  
+
+ // clear the entire canvas.
+ ctx.clearRect(0, 0, canvas.width, canvas.height);
+ // Create axes etc.
+ shufflePlotSetup(plot);
+}
+
+function resetDensityPlot() {
+ var canvas = bc$("densityPlot");  
+ var ctx = canvas.getContext("2d");  
+
+ // clear the entire canvas.
+ ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+
+// Clear the histogram and redraw axes
+function resetHistogram() {
+ var canvas = bc$("histogram");  
+ var ctx = canvas.getContext("2d");  
+
+ // clear the entire canvas.
+ ctx.clearRect(0, 0, canvas.width, canvas.height);
+ // Create axes etc.
+ histogramSetup();
+ 
+}
+
+// Revert to prior data
+function revertData() {
+	bc$("dataText").value = g_lastUseDataText;
+	useData();
+}
+
+// Change assumption about input data -- is it X (explanatory), Y (response) or Y,X?
+// QUIRK: It's important that the button be defined as <input type="button" value="(x,y")...> rather than <button>(x,y>)</button>!
+// Otherwise, we can't use .value to change the button text.
+function swapInputOrder() {
+	// Make the swap
+	g_inputIsExplanatoryResponse = !g_inputIsExplanatoryResponse;
+	// Update button label
+	// Use data under this new assumption
+	useData();
+}
+
+function getAltProb(){
+var altProbText = bc$("altProbText").value;
+var sum = 0;
+var inError = false;
+var altText = altProbText.split(",");
+if (altText.length != g_numLevels) {
+	showAlert("Don't have right number of categories");
+	inError = true;
+	}
+for (i=0; i<altText.length; i++){
+	g_altValues[i]=parseFloat(altText[i]);
+	if (isNaN(g_altValues[i])) g_altValues[i]=0;
+	sum += g_altValues[i];
+}
+if (.995 > sum || sum > 1.05) {
+	showAlert("Probabilities need to sum to one");
+	inError = true;
+	}
+if (inError) {
+	for (i=0; i< g_numLevels; i++)  g_altValues[i] = (1/g_numLevels);
+	updateAltProb();
+	}	
+}
+
+function getHypothProb(){
+var hypProbText = bc$("hypProbText").value;
+var sum=0;
+var inError = false;
+
+var propText = hypProbText.split(",");
+if (propText.length != g_numLevels) {
+	showAlert("Don't have right number of categories");
+	inError = true;
+	}
+for (i=0; i<propText.length; i++){
+	g_propValues[i]=parseFloat(propText[i]);
+	if (isNaN(g_propValues[i])) g_propValues[i]=0;
+	sum += g_propValues[i];
+}
+if (.995 > sum || sum > 1.05) {
+	showAlert("Probabilities need to sum to one");
+	inError = true;
+	}
+if (inError) {
+	for (i=0; i< g_numLevels; i++)  g_propValues[i] = (1/g_numLevels);
+	updateHypProb();
+	}
+else hideAlert();	
+}
+
+function plotPiechart1(divID){
+getHypothProb();
+	var myvalues = g_propValues;
+	var mylabels = g_level_orig;
+
+//to watch for resizing, also added redraw with mouse up
+let observer = new MutationObserver(function(mutations) {
+  window.dispatchEvent(new Event('resize'));
+});
+
+let child = document.getElementById('pieDiv');
+observer.observe(child, {
+  attributes: true
+})
+
+
+Plotly.newPlot(("pieDiv"), 
+		[
+			{
+			showlegend: false,
+			values: myvalues,
+			labels: mylabels,
+			textinfo: 'none',
+			//textinfo: 'label', //'value',
+			hoverinfo: 'label + value',
+			title: "hypothesized",
+			rotation: 270,
+			direction: 'clockwise',
+			marker: {
+				colors: ["darkblue", "lightblue", "indigo",  "light steel blue", "light coral", "light grey", "lavenderblush"]
+			},
+			type: "pie"
+			}
+		],
+		
+			{//layout
+			//	title: mytitle,
+				//autosize:true,
+				automargin: true,
+				 font: {
+					size: 10
+				  },
+			//	height: 40,
+			//	width: 80,
+				margin: {
+					l: 10, //was 20 and 40
+					r: 10,
+					b: 10,
+					t: 10,
+					pad: 0
+				}, 
+				//responsive: true
+		}, 
+		{//config
+			displayModeBar: false, 
+			responsive: true
+		}
+		);
+		
+}
+
+//needs to reset in case was entering tabular data
+function useDataBtn(){
+	g_tableEntry = false;
+	useData();
+}
+// Process data specified in dataText.
+function useData() {
+var i;
+	
+	// Reset to zero observed explanatory levels, zero observed response outcomes, zero observations.
+	g_numLevels = 0; // Explanatory levels.
+	g_numOutcomes = 0; // Response outcomes.
+	g_numObs = 0;
+	// Recreate arrays so it is easier to troubleshoot
+	g_obsX = new Array();
+	g_shuffleIndex = new Array();
+	g_noShuffleIndex = new Array();
+	g_level = new Array();
+	// Get the input string
+	var dataText = bc$("dataText").value;
+	// Save it for "revert"
+	g_lastUseDataText = dataText;
+	// Split by whitespaces
+	var dataWords = dataText.split(/\s+/);
+	if (dataWords.length <= 3) {
+		showAlert("Please enter sample data.");
+		return;
+	}
+	g_explanatoryTitle = dataWords[0];
+	//get rid of t_responseTitle
+	// See if data looks like it is missing titles
+	if (dataWords[0] == dataWords[1]) {
+		showAlert("Please include variable labels in the first row of the data table.");
+	}
+	// Map to chart titles -- x-axis only, y-axis is "percentages".
+	g_shufflePlot.xTitle = g_explanatoryTitle;
+	g_simSamplePlot.xTitle = g_explanatoryTitle;
+	// Read in the remaining data, store in g_explanatory, g_response.
+	// Map categorical explanatory values into integer g_obsX values. 
+	var explanatory;
+	for (i=1; i < dataWords.length; i += 1) {
+			explanatory = dataWords[i];
+			g_explanatory[g_numObs] = explanatory;
+			// Lookup explanatory level and return integer mapping. Save in g_obsX[]. If not seen before, add to g_level[].
+			g_obsX[g_numObs] = getExplanatoryLevel(explanatory);
+			// Initially, data is not shuffled, so set g_shuffleIndex[i] = i;
+			g_shuffleIndex[g_numObs] = g_obsX[g_numObs];
+			// Create g_noShuffleIndex so we can use it whenever we want original data.
+			// here, need to create an array of the data values, then used in getObsStats
+			g_noShuffleIndex[g_numObs] =  g_obsX[g_numObs];
+			g_numObs++;
+	}
+	//May have empty categories
+	if (g_level_orig.length > 0 && g_numLevels != g_level_orig.length) {
+		g_numLevels = g_level_orig.length;
+		g_level = g_level_orig.slice();
+		showAlert("Make sure you have listed any empty categories as the bottom row(s) of the table.");
+		}
+	// Perform tasks common to useData() and useTable()
+	doPostUseTasks();
+}
+
+// Version of parseInt that coerces to zero if there is a problem.
+function myParseInt(input) {
+	var output = parseInt(input.replace(/,/g,''));	
+	if (isNaN(output)) {
+		output = 0;
+	}
+	return output;
+};
+
+
+// Process table specified in dataText
+function useTable() {
+bc$("btnUseTable").style="";
+g_tableEntry = true;
+g_tableText = bc$("dataText").value;
+g_level = new Array();
+	// Get the input string	
+	var dataText = bc$("dataText").value;
+	// Save it for "revert"
+	g_lastUseDataText = dataText;
+	// Split by newlines
+	var dataLines = dataText.trim().split(/\r\n|\r|\n/);
+	// We don't get explanatory and response titles, so use generic names.
+	g_explanatoryTitle = "category";
+	// Set x-axis title.
+	g_shufflePlot.xTitle = g_explanatoryTitle;
+	g_simSamplePlot.xTitle = g_explanatoryTitle;
+	// Assume first row contains explanatory levels, split those by whitespaces
+	var dataLevels = dataLines[0].trim().split(/\s+/);
+	// Reset to zero observed explanatory levels, zero observed response outcomes, zero observations.
+	g_numLevels = 0; // Explanatory levels.
+	g_numOutcomes = 0; // Response outcomes.
+	g_numObs = 0;
+	g_level[0] = dataLines[0].trim().split(/\s+/)[0];
+	g_explanatory = new Array();
+	var explanatory, EVcount;
+	// Loop through non-title rows in table
+	for(row=0; row < dataLines.length; row++) {
+		// Split this line by whitespaces
+		var dataWords = dataLines[row].trim().split(/\s+/);
+		// Within each row, assume first word is outcome and second is count
+		explanatory = dataWords[0];
+		EVcount = dataWords[1];
+//		g_numLevels ++;
+	if (EVcount == 0){
+		getExplanatoryLevel(explanatory);
+	}
+		for (i=1; i<= EVcount; i++){
+			g_explanatory[g_numObs]=explanatory;
+			g_obsX[g_numObs] = getExplanatoryLevel(explanatory);
+			g_numObs++;
+		}
+	}
+	
+	// Keep any empty categories
+	g_level_orig = g_level.slice();
+	
+	// Populate data text with data values
+	updateDataText();
+	// Use it.
+	useData();
+}
+
+// Stuff that has to be done after both useData() and useTable()
+function doPostUseTasks() {
+	// Clear selection
+	g_selectedObsIndex = null;
+	// Data not shuffled.
+	g_isShuffled = false;
+	if (g_shuffleCount > 0) {
+		g_savedGetShuffleStats = g_lastGetShuffleStats;
+	}
+	g_shuffleCount = 0;
+	// X-axis shows each explanatory level
+	g_shufflePlot.xLabelCount = g_numLevels;
+	g_simSamplePlot.xLabelCount = g_numLevels;
+	// Set chi-squared-specific x-label function
+	g_shufflePlot.xLabelFct = chiPlotXLabelFct;
+	g_simSamplePlot.xLabelFct = chiPlotXLabelFct;
+	// Y-axis shows percentages of different response outcomes, show 6 y-axis values: 0, 20, 40, 60, 80, 100%. 
+	g_shufflePlot.yLabelCount = 6;
+	g_simSamplePlot.yLabelCount = 6;
+	// Set chi-squared-specific y-label function
+	g_shufflePlot.yLabelFct = chiPlotYLabelFct;
+	g_simSamplePlot.yLabelFct = chiPlotYLabelFct;
+
+	if(g_tableEntry) bc$("dataText").value =g_tableText;
+	if (g_numLevels == 2) {
+		//bc$("showDiffOption").disabled = false;
+		bc$("scenario").value = "propA";
+		bc$("scenario2").value = "propA";
+
+}
+
+
+	// Set default hypothesized probabilities
+	for (i=0; i< g_numLevels; i++)  g_propValues[i] = 1.0*(1/g_numLevels).toFixed(3);
+	updateHypProb();
+	// Redraw the chart.
+	redraw();
+	
+}
+
+
+
+// Lookup explanatory level and return ingeger mapping. If not seen before, add to g_level[].
+function getExplanatoryLevel(explanatory) {
+var explanatoryUpper = explanatory.toUpperCase();
+var i;
+
+	for (i=0; i<g_numLevels; i++) {
+		if (g_level[i].toUpperCase() == explanatoryUpper) {
+			return(i);
+		}
+	}
+	// Not found, so add it.
+	g_level[i] = explanatory;
+	g_numLevels++;
+	return(i);
+}
+
+// Lookup response outcome and return integer mapping. If not seen before, add to g_outcome[].
+function getResponseOutcome(response) {
+var responseUpper = response.toUpperCase();
+var i;
+
+	for (i=0; i<g_numOutcomes; i++) {
+		if (g_outcome[i].toUpperCase() == responseUpper) {
+			return(i);
+		}
+	}
+	// Not found, so add it.
+	g_outcome[i] = response;
+	g_numOutcomes++;
+	return(i);
+}
+
+// Update data text to reflect current observation values.
+function updateDataText() {
+var dataTextObj = bc$("dataText");
+var newDataText = g_explanatoryTitle +  "\n";
+
+	// Append the data values.
+	for (i=0; i<g_numObs-1; i++) {
+		newDataText += g_level[g_obsX[i]] + "\n";
+	}
+	newDataText += g_level[g_obsX[i]];
+	// Update data text.
+	// Note: Setting dataTextObj.innerHTML didn't always work in chrome -- it would work until user edited data in textarea and clicked on "use my data",
+	// after that setting innerHTML didn't modify the contents of the text area. Not sure why.
+	dataTextObj.value = newDataText;
+}
+function updateHypProb(){
+var hypTextObj =bc$("hypProbText");
+var newHypProbText = "";
+
+for (i=0; i< g_numLevels-1; i++){
+	newHypProbText += g_propValues[i].toFixed(3) + ",";
+}
+newHypProbText += g_propValues[g_numLevels-1].toFixed(3);
+hypTextObj.value = newHypProbText;
+}
+
+function updateAltProb(){
+var altTextObj =bc$("altProbText");
+var newAltProbText = "";
+
+for (i=0; i< g_numLevels-1; i++){
+	newAltProbText += g_altValues[i].toFixed(3) + ",";
+}
+newAltProbText += g_altValues[g_numLevels-1];
+altTextObj.value = newAltProbText;
+}
+
+function updateShuffledStatsText(){
+var shuffledStatsTextObj= bc$("shuffledStatsText");
+var stats=getObsStats();
+var newShuffledStatsText= "aa";
+	for (i=0; i<g_numLevels; i++){
+		newShuffledStatsText += "boo";
+		}
+	shuffledStatsTextObj.value = newShuffledStatsText;
+}
+
+function updateChisqOutput(prefix, shuffleIndex){
+var ChisqTextObj = bc$(prefix + "cellChisqOutputTable");
+var stats=getObsStats(shuffleIndex);
+var df = (g_numLevels-1);
+	var noShuffleIndex = new Array();
+	for(i=0; i<g_numObs; i++) {
+		noShuffleIndex[i] = i;
+	}
+	var statsNoShuffle = getObsStats(shuffleIndex);
+	var chiSquaredPvalue = 1-getchisqCDF(statsNoShuffle.chiSquared, df );
+	
+
+/*	var newChisqText = "Chisq Cell Contributions\n";
+		for (i=0; i<g_numLevels; i++){
+			newChisqText += "\t" + g_level[i];
+			}
+		newChisqText += "\tTotal\nObsd";	
+		for (i=0; i<g_numLevels; i++){
+			newChisqText += "\t" + stats.levelCount[i].toFixed(0);
+		}
+		newChisqText += "\t" + g_numObs + "\nExpd";	
+				for (i=0; i<g_numLevels; i++){
+			newChisqText += "\t" + stats.levelOutcomeExpectedCount[i].toFixed(2);
+		}
+		newChisqText += "\ncontrib";	
+		for (j=0; j<g_numLevels; j++){
+			newChisqText += "\t" + statsNoShuffle.chiSquaredContrib[j].toFixed(2) ;
+		}
+		newChisqText += "\n";				
+			
+	newChisqText += "Sum=" + statsNoShuffle.chiSquared.toFixed(3) + "\n";
+	newChisqText += "df=" + df.toFixed(0) + "\np-value= " + chiSquaredPvalue.toFixed(4) 	;
+	ChisqTextObj.value = newChisqText;
+	*/
+	
+	var newChiSqText2 = "";
+	if (prefix.length > 0)  newChiSqText2 = "<span>Most Recent Shuffled &chi;&#0178 Output</span> <span class='numericoutput'><table><caption style='text-align:left'></caption><thead><tr><th></th>";
+	else newChiSqText2 =	"Chisq Cell Contributions<span class='numericoutput'><table ><caption style='text-align: left'></caption><thead><tr><th>&nbsp;</th>";
+
+	for (i=0; i<g_numLevels; i++){
+		newChiSqText2 += "<th scope='col'>" + g_level[i] + "</th>";
+		}
+	newChiSqText2 += "<th scope='col'>Total</th></thead><tbody><th scope='row' class = 'th-inner'>Observed</th>";
+	for (i = 0; i<g_numLevels; i++){
+		newChiSqText2 += "<td align='center'>" +  stats.levelCount[i].toFixed(0) + "</td>"
+		}
+		newChiSqText2 += "<td>" + g_numObs + "</td></tr>";
+	newChiSqText2 += "<th scope='row' class = 'th-inner'>Expected</th>";
+	for (i = 0; i<g_numLevels; i++){
+		newChiSqText2 += "<td>" +  stats.levelOutcomeExpectedCount[i].toFixed(2)+ "</td>"
+		}
+		
+	
+	newChiSqText2 += "</tbody></table></span>";
+	ChisqTextObj.innerHTML = newChiSqText2;
+	ChisqTextObj.innerHTML += 	"<span class='numericoutput'>Sum = " + statsNoShuffle.chiSquared.toFixed(3) + "<br>"+  "df = " + df.toFixed(0)+ "<br>" +  "p-value = " + chiSquaredPvalue.toFixed(4) + "</span>"; 
+	
+}
+
+function updateTableText(prefix, shuffleIndex){
+var TableTextObj = bc$(prefix + "TableText");
+var stats = getObsStats(shuffleIndex);
+var newTableText = "";
+var rowtotal = 0;
+
+	newTableText = "<span class='numericoutput'><table><cpation style='text-align:left'></cpation><thead><tbody>";
+	newTableText += "<tr><th scope='col'> Outcome</th><th scope='col'> Count </th><th scope='col'> Prop.</th></tr>";
+	for (i=0; i< g_numLevels; i++){
+		newTableText += "<tr><th scope='row' align='left'>" +  g_level[i]+ "</th><td align='center'>" + stats.levelCount[i] + "</td><td>" + stats.levelOutcomeProp[i].toFixed(4) + "</td></tr>"
+		}
+	newTableText += "<tr><th scope='row' align='left'> Total </th><td align='center'>" + g_numObs + "</td><tr></tbody></table>";
+	TableTextObj.innerHTML = newTableText;
+}
+
+
+// Update shuffled data text to reflect current observation values.
+function updateShuffledDataText() {
+var shuffledDataTextObj = bc$("shuffledDataText");
+var newShuffledDataText = "<table border='0' ><thead><tr><th>";
+
+	if (g_isShuffled) {
+		newShuffledDataText += g_explanatoryTitle +"</th></tr></thead><tbody>";
+		// Append the data values.
+		for (i=0; i<g_numObs; i++) {
+			// Use g_shuffleIndex[] to get sample values.
+			if (g_shuffleStatsSelectedIndex != null) newShuffledDataText += "<tr><td>" + g_level[g_shuffleIndex[i]] + "</td></tr>";
+			else newShuffledDataText += "<tr><td>" + g_level[g_shuffleIndex[i]] + "</td></tr>";   // + g_outcome[g_obsY[g_shuffleIndex[i]]] + "\n";
+			
+		}
+		// Default shuffle title
+		var shuffleTitle = t_MostRecentShuffle[g_language]; 
+		if (g_shuffleStatsSelectedIndex != null) {
+			// Displaying a particular shuffle, to match selected point
+			shuffleTitle = t_shuffle[g_language] + " " +  (g_shuffleStatsSelectedIndex+1) + ":\n";
+		}
+		bc$("shuffleTitle").innerHTML = "<font color=\"blue\">" + shuffleTitle + "</font>";
+	}
+	// Update data text.
+	// Note: Setting dataTextObj.innerHTML didn't always work in chrome -- it would work until user edited data in textarea and clicked on "use my data",
+	// after that setting innerHTML didn't modify the contents of the text area. Not sure why.
+	shuffledDataTextObj.innerHTML = newShuffledDataText + "</tbody></table>";
+}
+
+function shuffleData() {
+var unshuffled = new Array();
+var randomIndex = 0;
+var shuffledIndexCount = 0;
+var numberOfShuffles = parseInt(bc$("numberOfShuffles").value.replace(/,/g,''));
+
+	if (isNaN(numberOfShuffles) || numberOfShuffles < 1) {
+		showAlert("Please enter a number >= 1 for the 'number of shuffles'.");
+		return;
+	}
+
+	var randomNumber = 0;
+	for (shuffle=1; shuffle <= numberOfShuffles; shuffle++) {
+		g_obsSampleX=new Array();
+		g_obsSampleXorig = new Array();
+		g_shuffleIndex = new Array();
+		getHypothProb();
+		if (bc$("showAltShuffleOptions").checked) getAltProb();
+		// To sample, we draw from the original sequence 0, ... g_numObs-1 without replacement, and build up g_shuffleIndex.
+		// Initialize unshuffled[i] = i. We will be destroying unshuffled[] as we withdraw observations.
+		for (i=0; i < g_numObs; i++) {
+			unshuffled[i] = i;
+		}
+		// Draw with replacement from each hypothesized probability.
+		for(shuffledIndexCount=0; shuffledIndexCount < g_numObs; shuffledIndexCount++) {
+			randomNumber = Math.random();
+			var i = 0;
+			if (bc$("showAltShuffleOptions").checked) var mycdf = g_altValues[0];
+			else var mycdf = g_propValues[0];
+			while(mycdf < randomNumber && i < g_numLevels-1) {
+				i +=1;
+				if (bc$("showAltShuffleOptions").checked) mycdf += g_altValues[i];
+				else mycdf += g_propValues[i];
+			}
+			randomIndex = i;
+//			randomIndex = Math.floor(Math.random() * (g_numLevels));
+			// But just in case Math.random() has a bug and returns 1, coerce:
+			if (randomIndex >= g_numLevels) {
+				randomIndex = g_numLevels-1;
+			}
+			// Pull out unshuffled[randomIndex], and assign to g_shuffleIndex[sampleIndexCount];
+			//g_shuffleIndex[shuffledIndexCount] = unshuffled[randomIndex];
+			//g_obsSampleX[shuffledIndexCount] = g_obsX[g_shuffleIndex[shuffledIndexCount]];
+			//g_obsSampleX[shuffledIndexCount] = randomIndex;
+			g_shuffleIndex[shuffledIndexCount] = randomIndex;
+			//g_obsSampleXorig[shuffledIndexCount] = g_obsX[g_shuffleIndex[shuffledIndexCount]];
+			// Delete unshuffled[randomIndex]
+			unshuffled.splice(randomIndex,1);
+		}
+		// Save statistics, then increment global sample count.
+		var stats = getObsStats(g_shuffleIndex);
+		g_shuffleStats[g_shuffleCount] = {
+			MAD: stats.meanAbsDiff,
+			CHISQ: stats.chiSquared,
+			MM: stats.MM,
+			MAXTALLY: stats.maxTally,
+			MINTALLY: stats.minTally,
+			PROPA: stats.propA,
+			shuffleIndex: g_shuffleIndex,
+			histogramChartX: null, // drawHistogram will fill this in when it draws the histogram
+			histogramChartY: null, // drawHistogram will fill this in when it draws the histogram			
+		}
+		g_shuffleCount++;
+	}
+	g_isShuffled = true;
+	if (numberOfShuffles == 1 && bc$("shuffleShowCards").checked) {
+		// Only 1 shuffle, so perform animation.
+		// The final animation procedure will call redraw()
+		// increment animation count, so when we call animation code, if prior animation is still running, then prior animation code will exit immediately.
+		g_animationCount++;
+		animateShuffle(g_animationCount);
+	} else {
+		// Not animating, redraw immediately
+		redraw();
+	}
+}
+
+function animateShuffle(animationCount) {
+var canvas = bc$("simCardAnimation");
+var ctx = canvas.getContext("2d");  
+	
+	// Initialize struct with animation current state.
+	var animationState = {
+		// Save canvas and context
+		canvas: canvas,
+		ctx: ctx,
+		// Number of cycles we want (starting from one card in middle, out to three separate cards, and then back to one card in middle)
+		// We will count down from this number and when it hits zero we will exit and call redraw();
+		shuffleCycle: 3,
+		// Distance (x pixels) we will animate from center to each side.
+		animateDistanceX: 50,
+		// Number of steps within cycle that we will animate, e.g. if animating 30 pixels and steps = 10, each step will be 3 pixels.
+		stepsWithinCycle: 10,
+		// Width and height of each card (pixels)
+		cardWidth: 40,
+		cardHeight: 65,
+		// Center of the canvas, we will center middle card at this point.
+		centerX: canvas.width / 2,
+		centerY: canvas.height / 2,
+		// Current position of left, middle, and right cards
+		leftCardX: canvas.width / 2,
+		middleCardX: canvas.width / 2,
+		rightCardX: canvas.width / 2,
+		// Limits to animation (to be computed)
+		leftLimitX: 0,
+		rightLimitX: 0
+	};
+	// Set limits
+	var s = animationState;
+	s.leftLimitX = s.centerX - s.animateDistanceX;
+	s.rightLimitX = s.centerX + s.animateDistanceX;	
+	// Start first phase (out) of animation cycle
+	setTimeout(function(){animateShuffleCycleOut(animationCount, animationState)}, g_delayMilliseconds);	
+}
+
+function drawFullDeck() {
+var canvas = bc$("simCardAnimation");
+var ctx = canvas.getContext("2d");
+var stats = getObsStats(g_shuffleIndex);
+
+	// Clear and show full deck.
+	clearCanvas(canvas, ctx);
+	// Show 4 rows of cards:
+	// 1) Treatment / success (blue cards)
+	// 2) Treatment / failure (green cards)
+	// 3) Control / success (blue cards)
+	// 4) Control / failure (green cards)
+	// Figure out which level is treatment and which is control.
+	var treatmentLevel = null;
+	var controlLeve = null;
+	if (g_level[0] == g_treatmentText) {
+		treatmentLevel = 0;
+		controlLevel = 1;
+	} else {
+		treatmentLevel = 1;
+		controlLevel = 0;
+	}
+	// Figure out which outcome is Success and which is Failure.
+	var successOutcome = null;
+	var failureOutcome = null;
+	if (g_outcome[0] == g_successText) {
+		successOutcome = 0;
+		failureOutcome = 1;
+	} else {
+		successOutcome = 1;
+		failureOutcome = 0;		
+	}	
+	// Set rowHeight and cardHeight so we can nicely fit 4 cards top to bottom in canvas.
+	var rowHeight = canvas.height / 5;
+	var cardHeight = 0.8 * rowHeight;
+	var cardWidth = cardHeight / 1.618;
+	// Leave space at left for text labels (Treatment, Control, Success, Failure, etc.)
+	var textWidth = 100;
+	var textTopBuffer = 10;
+	var textX = 5;
+	var textRowHeight = 13;
+	ctx.fillStyle = "black";
+	ctx.textAlign = "left";
+	ctx.font = "bold 12pt Courier";
+	// Write explanatory variable labels
+	ctx.fillText(t_group[g_language] + " A", textX, textTopBuffer + rowHeight * 0.1);
+	ctx.fillText(t_group[g_language] + " B", textX, textTopBuffer + rowHeight * 2.6);
+	// Within each explanatory variable, write Success and Failure
+	var rowTop = new Array();
+	ctx.font = "10pt Courier";
+	// Set reasonable tops for each row of cards.
+	rowTop[0] = textTopBuffer + textRowHeight * 1.25;
+	rowTop[1] = rowTop[0] + rowHeight;
+	rowTop[2] = rowTop[1] + textRowHeight * 1.25 + rowHeight;
+	rowTop[3] = rowTop[2] + rowHeight;
+	// levelOutcomeCount[explanatoryLevel][responseOutcome]
+	ctx.fillText(t_successPlain[g_language], textX, rowTop[0]);
+	ctx.fillText(stats.levelOutcomeCount[treatmentLevel][successOutcome].toFixed(0), textX, rowTop[0] + textRowHeight);
+	ctx.fillText(t_failure[g_language], textX, rowTop[1]);
+	ctx.fillText(stats.levelOutcomeCount[treatmentLevel][failureOutcome].toFixed(0), textX, rowTop[1] + textRowHeight);
+	ctx.fillText(t_successPlain[g_language], textX, rowTop[2]);
+	ctx.fillText(stats.levelOutcomeCount[controlLevel][successOutcome].toFixed(0), textX, rowTop[2] + textRowHeight);
+	ctx.fillText(t_failure[g_language], textX, rowTop[3]);
+	ctx.fillText(stats.levelOutcomeCount[controlLevel][failureOutcome].toFixed(0), textX, rowTop[3] + textRowHeight);
+	// See notes in AnovaShuffle on why we do this to get unshuffleIndex
+	var unshuffleIndex = new Array()
+	for (var i=0; i < g_numObs; i++) {
+		unshuffleIndex[g_shuffleIndex[i]] = i;
+	}
+	// Loop through cards and draw them in appropriate row, flagging those that came from original treatment group with a top stripe.
+	var treatmentSuccessCount = 0;
+	var treatmentFailureCount = 0;
+	var controlSuccessCount = 0;
+	var controlFailureCount = 0;
+	var card = 0;
+	var cardOffsetPixels = 6;	// Increase this to make visible portion of each card wider (but this takes more canvas width)
+	var fillStyle = "";
+	for (var i=0; i<=g_numObs; i++) {
+		var row = -1;
+		var topStripe = false;
+		if (g_obsX[i] == treatmentLevel && g_obsY[g_shuffleIndex[i]] == successOutcome) {
+			// This is a treatment/success(after shuffling), it goes in row 0.
+			treatmentSuccessCount++;
+			row = 0;
+			card = treatmentSuccessCount;
+			fillStyle = g_fillBlue;
+		}
+		if (g_obsX[i] == treatmentLevel && g_obsY[g_shuffleIndex[i]] == failureOutcome) {
+			// This is treatment/failure(after shuffling), it goes in row 1.
+			treatmentFailureCount++;
+			row = 1;
+			card = treatmentFailureCount;
+			fillStyle = g_fillGreen;
+		}
+		if (g_obsX[i] == controlLevel && g_obsY[g_shuffleIndex[i]] == successOutcome) {
+			// This is control/success(after shuffling), it goes in row 2.
+			controlSuccessCount++;
+			row = 2;
+			card = controlSuccessCount;
+			fillStyle = g_fillBlue;
+		}
+		if (g_obsX[i] == controlLevel && g_obsY[g_shuffleIndex[i]] == failureOutcome) {
+			// This is control/failure(after shuffing), it goes in row 3
+			controlFailureCount++;
+			row = 3;
+			card = controlFailureCount;
+			fillStyle = g_fillGreen;
+		}
+		if (g_obsX[g_shuffleIndex[i]] == treatmentLevel) {
+			// The shuffled outcome value came originally from a treatment observation, so put a stripe on this card to identify it.
+			topStripe = true;
+		}
+		if (row != -1) {
+			// Draw the card in its proper row
+			var cardCenterY = rowTop[row] - textRowHeight / 2 + cardHeight * 0.5;
+			drawCard(ctx, textWidth + (card-1) * cardOffsetPixels, cardCenterY, cardWidth, cardHeight, fillStyle, topStripe);
+		}
+	}
+}
+
+// Animate cards out
+function animateShuffleCycleOut(animationCount, animationState) {
+var s = animationState;
+
+	// Check for newer animation already running
+	if (animationCount != g_animationCount) {
+		return;
+	}
+	// Check for at/beyond limit
+	if (s.leftCardX <= s.leftLimitX) {
+		// start next phase (in) of this cycle
+		setTimeout(function(){animateShuffleCycleIn(animationCount, animationState)}, g_delayMilliseconds);
+	} else {
+		// Clear the canvas
+		clearCanvas(s.canvas, s.ctx);
+		// Draw cards at current locations
+		drawCards(s);
+		// Shift cards further out
+		s.leftCardX -= s.animateDistanceX / s.stepsWithinCycle;
+		s.rightCardX += s.animateDistanceX / s.stepsWithinCycle;
+		// Call back to this routine
+		setTimeout(function(){animateShuffleCycleOut(animationCount, animationState)}, g_delayMilliseconds);	
+	}
+}
+
+// Animate cards in
+function animateShuffleCycleIn(animationCount, animationState) {
+var s = animationState;
+
+	// Check for newer animation already running
+	if (animationCount != g_animationCount) {
+		return;
+	}
+	// Check for back at center
+	if (s.leftCardX >= s.centerX) {
+		// Finished with cycle, decrement cycle counter
+		s.shuffleCycle--;
+		if (s.shuffleCycle > 0) {
+			// continue with next cycle
+			setTimeout(function(){animateShuffleCycleOut(animationCount, animationState)}, g_delayMilliseconds);
+		} else {
+			// Finished with animation, so redraw()
+			redraw();
+		}
+	} else {
+		// Clear the canvas
+		clearCanvas(s.canvas, s.ctx);
+		// Draw cards at current locations
+		drawCards(s);
+		// Shift cards back in.
+		s.leftCardX += s.animateDistanceX / s.stepsWithinCycle;
+		s.rightCardX -= s.animateDistanceX / s.stepsWithinCycle;
+		// Call back to this routine
+		setTimeout(function(){animateShuffleCycleIn(animationCount, animationState)}, g_delayMilliseconds);	
+	}
+}
+
+function drawCards(animationState) {
+var s = animationState;
+
+	// Make card on right blue, so we see different color cards.
+	drawCard(s.ctx, s.leftCardX, s.centerY, s.cardWidth, s.cardHeight, g_fillGreen, false);
+	drawCard(s.ctx, s.middleCardX, s.centerY, s.cardWidth, s.cardHeight, g_fillGreen, false);
+	drawCard(s.ctx, s.rightCardX, s.centerY, s.cardWidth, s.cardHeight, g_fillBlue, false);
+}
+
+function drawCard(ctx, cardCenterX, cardCenterY, cardWidth, cardHeight, fillStyle, topStripe) {
+	ctx.fillStyle = fillStyle;
+	ctx.lineStyle = "black";
+	ctx.lineWidth = 1;
+	var cardLeftX = cardCenterX - cardWidth / 2;
+	var cardTopY = cardCenterY - cardHeight / 2;
+	roundRect(ctx, cardLeftX, cardTopY, cardWidth, cardHeight, cardWidth * 0.10).fill();
+	if (topStripe) {
+		// Put dark stripe across top of card
+		ctx.fillStyle = "#000080";
+		roundRect(ctx, cardLeftX, cardTopY, cardWidth, cardHeight * 0.15, cardWidth * 0.10).fill();		
+	}
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+	if (w < 2 * r) r = w / 2;
+	if (h < 2 * r) r = h / 2;
+	ctx.beginPath();
+	if (g_usingExCanvas) {
+		// ExCanvas doesn't support arcTo, so just draw plain rectangle with square corners
+		ctx.rect (x, y, w, h);
+	} else {
+		ctx.moveTo(x+r, y);
+		ctx.arcTo(x+w, y,   x+w, y+h, r);
+		ctx.arcTo(x+w, y+h, x,   y+h, r);
+		ctx.arcTo(x,   y+h, x,   y,   r);
+		ctx.arcTo(x,   y,   x+w, y,   r);
+	}
+	ctx.stroke();	
+	ctx.closePath();
+	return ctx;
+}
+
+function clearCanvas(canvas, ctx) {
+	// Clear animation canvas
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+};
+
+function changeIs2x2Input() {
+	//useData();
+	redraw();
+};
+
+// User changed "show shuffle options"
+function changeShowShuffleOptions()
+{
+	// If we previously were scrambling, then call useData() to reset back to original data.
+	if (g_shuffleCount > 0) {
+		g_savedGetShuffleStats = g_lastGetShuffleStats;
+		useData();
+		g_shuffleCount = 0;
+		bc$("cellNumberofShufflesTotal").innerHTML=t_TotalShuffles[g_language] + " = " + g_shuffleCount;
+
+	}
+	else g_savedGetShuffleStats = null;
+//	bc$("pieDiv").style.display="";
+//	plotPiechart1("piechart");
+	// Always redraw
+	redraw();
+};
+
+//user changed hypothesized probabilities
+function changeHypothesized()
+{
+	g_shuffleCount = 0;
+	g_savedGetShuffleStats = g_lastGetShuffleStats;
+	bc$("cellNumberofShufflesTotal").innerHTML=t_TotalShuffles[g_language] + " = " + g_shuffleCount;
+	// Always redraw
+	redraw();
+};
+
+function changeShowChisq() {
+	redraw();
+};
+
+function changeShowFET(){
+	redraw();
+}
+function changeShowTable() {
+	redraw();
+};
+
+function changeShowSimTable() {
+	redraw();
+};
+
+function changeHistStat() {
+	bc$("scenario2").value = bc$("scenario").value;
+	
+	// If choice of statistic for histogram is changed, then blank out the "count shuffles" input. Otherwise,
+	// we may be displaying a count for an input that isn't appropriate for the current choice of statistic.
+	bc$("countInput").value = "";
+	//bc$("lnrelriskbox").checked = false;
+	// Redraw the output
+	redraw();
+};
+
+function changeHistStat2() {
+	bc$("scenario").value = bc$("scenario2").value;
+	changeHistStat();
+};
+
+function doCountSamples() {
+//var extremeAs = parseFloat(bc$("countInput").value);
+	g_countSamples = true;
+	countSamples = true;
+	redraw();
+}
+
+function normcdf(z)
+{
+var t = (z > 0) ? z : (- z);
+var p = 1 - Math.pow((1 + (t * (0.0498673470 + t * (0.0211410061 + t *
+(0.0032776263 + t * (0.0000380036 + t * (0.0000488906 + t *
+0.0000053830))))))), -16) / 2;
+return ((z > 0) ? p : (1 - p));
+}
+
+function hyp(x,n,m,bigN) {
+// from http://www.math.ucla.edu/~tom/distributions/Hypergeometric.html
+    var nz,mz;
+    if (m<n) {         //best to have n<m
+    	nz=m;
+		mz=n
+    } else {
+		nz=n;
+		mz=m
+    }
+	var h=1,s=1,k=0,i=0;
+	while (i<x) {
+	    while ((s>1)&&(k<nz)) {
+	    	h=h*(1-mz/(bigN-k));
+	    	s=s*(1-mz/(bigN-k));
+	    	k=k+1;
+	    }
+		h=h*(nz-i)*(mz-i)/(i+1)/(bigN-nz-mz+i+1);
+		s=s+h;
+		i=i+1;
+	}
+	while (k<nz) {
+		s=s*(1-mz/(bigN-k));
+		k=k+1;
+	}
+	return s;
+};
+
+function hypercdf(bigN,m,n,x) {
+// from http://www.math.ucla.edu/~tom/distributions/Hypergeometric.html
+var Prob = 0;
+    if ((n<=0)||(m<=0)||(bigN<=0)) {
+		Prob=0;
+    } else if ((m>bigN)||(n>bigN)) {
+		Prob=0;
+    } else if ((x<0)||(x<n+m-bigN)) {
+    	Prob=0;
+    } else if ((x>=n)||(x>=m)) {
+		Prob=1;
+    } else {
+        if (2*m>bigN) {
+			if (2*n>bigN) {
+				Prob=hyp(bigN-m-n+x,bigN-n,bigN-m,bigN);
+			} else {
+				Prob=1-hyp(n-x-1,n,bigN-m,bigN);
+			}
+        } else if (2*n>bigN) {
+			Prob=1-hyp(m-x-1,m,bigN-n,bigN);
+        } else {
+    	    Prob=hyp(x,n,m,bigN);
+        }
+    }
+	
+	return(Prob);
+};
+
+
+// Redraw all outputs.
+function redraw() {
+	// Get histStatChoice
+	var histStatChoice = getHistStatChoice();
+	// Handle special case - if not 2x2 (so Diff/RR hidden), and there's no statChoice chosen, then select MAD.
+//	if (!is2by2() && histStatChoice == "") {
+//		selectMeanAbsDiff();
+//	}
+
+	// Get reporting outcome.
+	//g_reportingOutcome = bc$("reportingOutcome").selectedIndex;
+	// Get stats for (possibly shuffled) data.
+	var stats = getObsStats();
+	// Get stats for original (not shuffled) data.
+	var noShuffleIndex = new Array();
+	for(i=0; i<g_numObs; i++) {
+		noShuffleIndex[i] = i;
+	}
+	updateTableText("", g_obsX);
+	updateTableText("shuffled", g_shuffleIndex);
+
+	//var statsNoShuffle = getObsStats(noShuffleIndex);
+	var statsNoShuffle = getObsStats(g_obsX);
+	// Output sum of absolute differences -- original and shuffled (in blue).
+	bc$("meanAbsDiff").innerHTML =t_observed[g_language] + " MAD = " + statsNoShuffle.meanAbsDiff.toFixed(3);
+	bc$("simMeanAbsDiff").innerHTML = "<font color=\"blue\">" + t_MostRecentShuffle[g_language] + " MAD = " + stats.meanAbsDiff.toFixed(3) + "</font>";
+	// Output chi-squared -- original and shuffled (in blue).
+	bc$("chiSquared").innerHTML = t_observed[g_language] + " &chi;&#0178; = " + statsNoShuffle.chiSquared.toFixed(3);
+	
+//	bc$("chiSquared").innerHTML += "<br> (hypothesized: equal probabilities)";
+	bc$("chiSquared").innerHTML += "<br> (hypothesized:" + bc$("hypProbText").value + ")";
+	bc$("simChiSquared").innerHTML = "<font color=\"blue\">" + t_MostRecentShuffle[g_language]+" &chi;&#0178; = " + stats.chiSquared.toFixed(2) + "</font>";
+	// Output 2x2 difference -- original and shuffled (in blue).
+//("diff").innerHTML = t_observed[g_language] + " Diff=" + statsNoShuffle.diff.toFixed(3);
+//("simDiff").innerHTML = "<font color=\"blue\">" + t_MostRecentShuffle[g_language] + "" + t_diff[g_language] + " =" + stats.diff.toFixed(3) + "</font>";
+	// Output 2x2 RR -- original and shuffled (in blue).
+	// Output Max - Min -- original and shuffled (in blue).
+	if (g_shuffleCount > 0){
+		bc$("simMaxTally").innerHTML = "<font color=\"blue\">" + t_MostRecentShuffle[g_language] + " Max Tally = " + stats.maxTally.toFixed(0) + "</font>";	
+		bc$("simMinTally").innerHTML = "<font color=\"blue\">" + t_MostRecentShuffle[g_language] + " Min Tally = " + stats.minTally.toFixed(0) + "</font>";	
+		bc$("simPropA").innerHTML = "<font color=\"blue\">" + t_MostRecentShuffle[g_language] + " Proportion " + g_level[0] +" = " + stats.propA.toFixed(3) + "</font>";	
+		bc$("simMM").innerHTML = "<font color=\"blue\">" + t_MostRecentShuffle[g_language] + " Max - Min =" + stats.MM.toFixed(3) + "</font>";
+	}
+	bc$("maxTally").innerHTML = t_observed[g_language] + " Max Tally = " + statsNoShuffle.maxTally.toFixed(0);
+	bc$("minTally").innerHTML = t_observed[g_language] + " Min Tally = " + statsNoShuffle.minTally.toFixed(0);
+	bc$("MM").innerHTML = t_observed[g_language] + " Max - Min = " + statsNoShuffle.MM.toFixed(3);
+	bc$("propA").innerHTML = t_observed[g_language] + " Proportion " + g_level[0] +" = "+ statsNoShuffle.propA.toFixed(3);
+	
+	// Turn everything off to start
+	bc$("meanAbsDiff").style.display = "none";
+	bc$("simMeanAbsDiff").style.display = "none";
+	bc$("chiSquared").style.display = "none";
+	bc$("simChiSquared").style.display = "none";
+	bc$("MM").style.display = "none";
+	bc$("simMM").style.display = "none";
+	bc$("maxTally").style.display = "none";
+	bc$("propA").style.display = "none";
+	bc$("simPropA").style.display="none";
+	bc$("simMaxTally").style.display = "none";
+	bc$("minTally").style.display = "none";
+	bc$("simMinTally").style.display = "none";
+	bc$("shuffledcellChisqOutputTable").style.display="none";
+	
+	
+	// Turn things on selectively
+	if (showMeanAbsDiff()) {
+		bc$("meanAbsDiff").style.display = "";
+		if (g_shuffleCount > 0) {
+			bc$("simMeanAbsDiff").style.display = "";
+		}
+	}
+	if (showChiSquared()){
+		bc$("chiSquared").style.display = "";
+		if (g_shuffleCount > 0) {
+			bc$("simChiSquared").style.display = "";
+			bc$("shuffledcellChisqOutputTable").style.display="";
+		}
+	}
+	
+	if (showMM()){
+		bc$("MM").style.display="";
+		if (g_shuffleCount > 0){
+			bc$("simMM").style.display = "";
+		}
+	}
+	
+	if (showMaxTally()){
+		bc$("maxTally").style.display="";
+		if (g_shuffleCount > 0){
+			bc$("simMaxTally").style.display = "";
+		}
+	}
+	if (showMinTally()){
+		bc$("minTally").style.display="";
+		if (g_shuffleCount > 0){
+			bc$("simMinTally").style.display = "";
+		}
+	}
+	if (showProportion()){
+		bc$("propA").style.display="";
+		if (g_shuffleCount > 0){
+			bc$("simPropA").style.display = "";
+		}
+	}
+	
+	// Turn things on selectively
+	// Reset the shufflePlot and simSamplePlot, redraw with new labels.
+	resetSamplePlot(g_shufflePlot);
+	resetSamplePlot(g_simSamplePlot);
+	// For each explanatory level, draw percentage of each response outcome.
+	//drawSamplePlot(g_shufflePlot, noShuffleIndex);
+	drawSamplePlot(g_shufflePlot, g_obsX);
+	if (g_shuffleCount > 0) {
+		drawSamplePlot(g_simSamplePlot, g_shuffleIndex);
+	}
+	// Reset the histogram, redraw with new labels.
+	resetHistogram();
+	// Draw the histogram
+	if (g_shuffleCount > 0) drawHistogram();
+	abletomovepoints=true;
+	updateShuffledDataText();
+	updateChisqOutput("", g_obsX);
+	updateChisqOutput("shuffled", g_shuffleIndex);
+/*("cellShowSimChisqText").style.display="none";	
+	bc$("shuffledshowChisqText").style.display="none";*/
+	bc$("cellChisqOutputTable").style.display="none";
+	bc$("shuffledcellChisqOutputTable").style.display="none";
+	bc$("cellTheoPvalue").style.display = "none";
+	bc$("cellTheoPvalueZ").style.display = "none";
+	bc$("cellCIs").style.display="none";
+	bc$("CIOutput").style.display="none";
+	bc$("cellTheoPvalueOutput").style.display="none";
+	
+	if (bc$("showChisq").checked  || histStatChoice == "CHISQ" ) {
+		bc$("cellCIs").style.display="none";
+		bc$("CIOutput").style.display="none";
+		}
+	if (bc$("showChisq").checked || histStatChoice =="CHISQ" || bc$("showShuffleOptions").checked){
+		bc$("cellHypothesizedProbsLabel").style.display="";
+		bc$("hypProbText").style.display="";
+		bc$("setProbs").style.display="";
+		bc$("pieDiv").style.display="";
+		bc$("cellHypothesizedProbsLabel").innerHTML = "Enter hypothesized probabilities:<br>" + g_level;
+		plotPiechart1("piechart");
+		}
+	else {
+		bc$("cellHypothesizedProbsLabel").style.display="none";
+		bc$("hypProbText").style.display="none";
+		bc$("setProbs").style.display="none";
+		bc$("pieDiv").style.display="none";
+	}
+	if (bc$("showChisq").checked){ //this is the show chi-squared output checkbox
+		bc$("showChisqText").style.display="none";
+		bc$("cellChisqOutputTable").style.display="";
+		var df = g_numLevels -1;
+			resetDensityPlot();
+			setDensityPlotMinMax(statsNoShuffle.chiSquared);
+			plotSetup(g_densityPlot);
+			setPlotScale(g_densityPlot);
+			drawAxes(g_densityPlot, g_densityPlot.ctx);
+			writeXAxisTitle(g_densityPlot, g_densityPlot.ctx);
+			writeYAxisTitle(g_densityPlot, g_densityPlot.ctx);
+			writeHistogramXAxisLabels(g_densityPlot, g_densityPlot.ctx);
+			drawDensityPlot(0, statsNoShuffle.chiSquared, "lightblue", "blue", false, df);	
+			drawDensityPlot(statsNoShuffle.chiSquared, g_densityPlot.maxX+1, "#FFDEAD", "#DB0000", true, df); //"#F08080");
+		
+		
+		bc$("cellCIs").style.display="none";
+		if (g_shuffleCount > 0) {
+			//bc$("shuffledshowChisqText").style.display="";
+			//bc$("cellShowSimChisqText").style.display="";
+			bc$("shuffledcellChisqOutputTable").style.display="";
+		}
+	} else {
+		bc$("showChisqText").style.display="none";
+		bc$("cellCIs").style.display="none";
+	}
+	//bc$("cellShuffledTableText").style.display="none";		
+	bc$("shuffledTableText").style.display="none";		
+	//bc$("cellTableText").style.display="none";
+	bc$("TableText").style.display="none";
+	
+	if (bc$("showTable").checked) {
+		if (bc$("showShuffleOptions").checked) bc$("shuffledTableText").style.display="";
+		//bc$("cellTableText").style.display="";
+		bc$("TableText").style.display="";
+	}
+	
+	if (bc$("showChisq").checked){
+		if (g_shuffleCount == 0) bc$("showChidensity").style.display="";
+			else bc$("showChidensity").style.display="none";
+	}
+
+	if (bc$("showShuffleOptions").checked && bc$("overlayZ").checked && (histStatChoice == "DIFF" || histStatChoice == "PROPA")) {
+			bc$("cellTheoPvalueOutput").style.display="";
+			var countInput = parseFloat(bc$("countInput").value);
+			var normalPvalue = normcdf((countInput/statsNoShuffle.SDdiff) );
+			var countOperator = bc$("countOperator").value.toUpperCase();
+			//			if (countOperator == "Beyond") graphTPvalue = 2*getTCDF(df, countInput);
+			switch (countOperator) {
+				case "GREATER THAN": 
+					normalPvalue = 1-normalPvalue;
+					break;	
+				case "LESS THAN":
+					break;
+				case "BEYOND":
+					if (countInput < 0) normalPvalue = normalPvalue *2.0;
+					else normalPvalue = (1-normalPvalue)*2.0;
+					break;
+				default:
+					break;
+			}	
+			if (!isNaN(normalPvalue)) {
+				bc$("cellTheoPvalueOutput").innerHTML = "<font  color= #B35900> theory-based p-value = " + normalPvalue.toFixed(4) + "</font>";
+			} else {
+				bc$("cellTheoPvalueOutput").innerHTML = "";
+			}
+			if (bc$("computeCIs").checked){
+				bc$("CIOutput").style.display = "";
+			} else {
+				bc$("CIOutput").style.display="none";
+			}			
+	}	
+	
+	else if (bc$("showShuffleOptions").checked && bc$("overlayF").checked && histStatChoice == "CHISQ") {
+			bc$("cellTheoPvalueOutput").style.display="";
+			var countInput = parseFloat(bc$("countInput").value);
+			var df = (g_numLevels-1);
+			var chiSquaredPvalue = 1-getchisqCDF(countInput, df );
+			if (!isNaN(chiSquaredPvalue)) {
+				bc$("cellTheoPvalueOutput").innerHTML = "<font color= #B35900> theory-based p-value = " + chiSquaredPvalue.toFixed(4) + "</font>";
+			} else {
+				bc$("cellTheoPvalueOutput").innerHTML = "";
+			}
+			if (bc$("computeCIs").checked){
+				bc$("CIOutput").style.display = "";
+			} else {
+				bc$("CIOutput").style.display="none";
+			}			
+	}	else {
+			bc$("cellTheoPvalueOutput").style.display="none";
+			bc$("cellTheoPvalueOutput").innerHTML = "";
+	}
+	//add another condition here for chi-squared statistic selected or not Nan
+	bc$("cellTheoPvalueOutput").style.display="none";
+	bc$("CIOutput").style.display="none";
+	if (bc$("overlayF").checked || bc$("overlayZ").checked || (bc$("computeCIs").checked) ) {
+			if (bc$("overlayF").checked || bc$("overlayZ").checked) bc$("cellTheoPvalueOutput").style.display="";
+//			if (bc$("computeCIs").checked &&( histStatChoice == "DIFF" || histStatChoice == "CHISQ")) bc$("CIOutput").style.display="";
+			if (bc$("computeCIs").checked) bc$("CIOutput").style.display="";
+	}	
+	
+	if (bc$("showShuffleOptions").checked) {
+		bc$("cellNumberOfShuffles").style.display="";
+		bc$("choosestatistic2").style.display="";
+		
+	//	bc$("hypProbText").style.display="";
+		if(gup("power") == "1"){
+			bc$("showAltShuffleOptions").style.display="";
+			bc$("showAltProbsLabel").style.display="";
+		}
+		else {
+			bc$("showAltShuffleOptions").style.display="none";
+			bc$("showAltProbsLabel").style.display="none";
+			}
+		if (bc$("showAltShuffleOptions").checked){
+			bc$("cellAltProbs").style.display="";
+			bc$("altProbText").style.display="";
+			}
+		else{
+			bc$("cellAltProbs").style.display="none";
+			bc$("altProbText").style.display="none";
+		}
+		if (g_savedGetShuffleStats != null ) bc$("cellShowPrevious").style.display="";
+		bc$("cellNumberofShufflesTotal").style.display="";
+		bc$("cellShuffleData").style.display="";
+		bc$("shuffleTitle").style.display="";
+		bc$("cellShuffleHistogram").style.display="";
+		bc$("cellShuffleCountSamples").style.display="";
+		bc$("countSamplesOutput").style.display="";
+		bc$("countSamplesNotes").style.display="";		
+		if (showChiSquared()) {
+			bc$("cellTheoPvalue").style.display="";
+			//if (bc$("overlayF").checked ) {
+				bc$("cellCIs").style.display="none";
+			//}
+		}
+		else {
+			bc$("cellTheoPvalue").style.display="none";
+			bc$("cellTheoPvalueZ").style.display="none";			
+		}
+		if (bc$("shuffleShowTable").checked) {
+			bc$("cellShuffledDataText").style.display="";
+		} else {
+			bc$("cellShuffledDataText").style.display="none";
+		}
+		if (bc$("shuffleShowPlot").checked) {
+			bc$("simSamplePlot").style.display="";
+		} else {
+			bc$("simSamplePlot").style.display="none";
+		}	
+		bc$("simCardAnimation").style.display = "none";
+		bc$("shuffleShowCardsOption").style.display = "none";
+	} else {
+		bc$("cellNumberOfShuffles").style.display="none";
+	//	bc$("cellHypothesizedProbsLabel").style.display="none";
+	//	bc$("hypProbText").style.display="none";
+		bc$("showAltShuffleOptions").style.display="none";
+		bc$("cellAltProbs").style.display="none";
+		bc$("showAltProbsLabel").style.display="none";
+		bc$("altProbText").style.display="none";
+		bc$("cellShowPrevious").style.display="none";
+		bc$("cellNumberofShufflesTotal").style.display="none";
+		bc$("cellShuffleData").style.display="none";
+		bc$("cellShuffledDataText").style.display="none";
+		bc$("shuffleTitle").style.display="none";
+		bc$("cellShuffleHistogram").style.display="none";
+		bc$("cellShuffleCountSamples").style.display="none";
+		bc$("countSamplesOutput").style.display="none";
+		bc$("countSamplesNotes").style.display="none";
+		bc$("simSamplePlot").style.display="none";
+		bc$("cellTheoPvalue").style.display="none";
+		bc$("cellTheoPvalueZ").style.display="none";
+		bc$("cellCIs").style.display="none";
+		bc$("CIOutput").style.display="none";
+		if (bc$("showChisq").checked || histStatChoice == "CHISQ" || histStatChoice == "DIFF" || histStatChoice == "RR" || histStatChoice == "lnRR") {
+			bc$("cellCIs").style.display="none";
+			if (bc$("computeCIs").checked) bc$("CIOutput").style.display="";
+		}
+		bc$("simCardAnimation").style.display = "none";
+		bc$("shuffleShowCardsOption").style.display = "none";
+	}
+
+};
+
+function is2by2() {
+	return (g_numLevels == 2 && g_numOutcomes == 2);
+};
+
+function selectShowDiff() {
+//	bc$("scenario").value = "diff";
+}
+function selectMeanAbsDiff(){
+	bc$("scenario").value = "meanAbsDiff";
+}
+
+
+function showDiff() {
+//	return(bc$("scenario").value == "diff");
+}
+function showRR() {
+	return(bc$("scenario").value == "RelRisk");
+}
+function showMeanAbsDiff() {
+	return(bc$("scenario").value == "meanAbsDiff");
+}
+function showMM() {
+	return(bc$("scenario").value == "MM");
+}
+function showMaxTally() {
+	return(bc$("scenario").value == "maxTally");
+}
+
+function showProportion() {
+	return(bc$("scenario").value == "propA");
+}
+function showMinTally() {
+	return(bc$("scenario").value == "minTally");
+}
+function showChiSquared() {
+	return(bc$("scenario").value == "chiSquared");
+}
+function showXcount() {
+	return(bc$("scenario").value == "Xcount");
+}
+
+function getHistStat(stats) {
+var stat = 0;
+
+		// General case, choose between MAD and Chi-squared.
+		if (showMeanAbsDiff()) stat = stats.meanAbsDiff;
+		if (showMM()) stat = stats.MM;
+		if (showChiSquared()) stat = stats.chiSquared;
+		if (showMaxTally()) stat = stats.maxTally;
+		if (showMinTally()) stat = stats.minTally;
+		if (showProportion()) stat = stats.propA;
+	return(stat);
+};
+
+function getHistStatChoice() {
+var statChoice = "";
+
+		// General case, choose between MAD and Chi-squared.
+		if (showMeanAbsDiff()) statChoice = "MAD";
+		if (showChiSquared()) statChoice = "CHISQ";
+		if (showMM()) statChoice = "MM";
+		if (showMaxTally()) statChoice = "MAXTALLY";
+		if (showMinTally()) statChoice = "MINTALLY";
+		if (showProportion()) statChoice = "PROPA";
+
+	return(statChoice);
+};
+
+// Clear dataText
+function clearData() {
+	bc$("dataText").value = "";
+	g_tableEntry = false;
+	// Update totals.
+//	change2x2Input();
+};
+
+function change2x2Input() {
+	bc$("total2x2SuccessCount").innerHTML =
+		myParseInt(bc$("input2x2TreatmentSuccessCount").value)
+		+ myParseInt(bc$("input2x2ControlSuccessCount").value);
+	bc$("total2x2FailureCount").innerHTML =
+		myParseInt(bc$("input2x2TreatmentFailureCount").value)
+		+ myParseInt(bc$("input2x2ControlFailureCount").value);
+	bc$("total2x2TreatmentCount").innerHTML =
+		myParseInt(bc$("input2x2TreatmentSuccessCount").value)
+		+ myParseInt(bc$("input2x2TreatmentFailureCount").value);
+	bc$("total2x2ControlCount").innerHTML =
+		myParseInt(bc$("input2x2ControlSuccessCount").value)
+		+ myParseInt(bc$("input2x2ControlFailureCount").value);
+	bc$("total2x2Count").innerHTML =
+		myParseInt(bc$("total2x2TreatmentCount").innerHTML)
+		+ myParseInt(bc$("total2x2ControlCount").innerHTML);
+};
+
+function about() {
+	showAlert(g_about);
+};
+
+function changeNotes(){
+	g_showNotes = !g_showNotes;
+	if (g_showNotes){
+		bc$("UserNotes").value = "Hide Notes"; //change button text
+		bc$("UserNotesText").style.display="";
+		}
+		else {
+			bc$("UserNotes").value = t_notesButton[g_language];
+			bc$("UserNotesText").style.display="none";
+		}
+var notesbody = "<br>- First row in data table is assumed to be variable names (use single words, no symbols). You can also specify the table of counts (just list outcomes and count in each row).<br>- Check the Show Sampling Options box to enter hypothesized probabilities (equally likely by default)<br>- Separate hypothesized probability values by comma<br>- MAD = mean absolute deviation between observed and expected counts.<br>- Max - Min = largest sample proportion - smallest sample proportion."
+bc$("UserNotesText").innerHTML = notesbody;
+
+}
+	
+
+</script>  
+<title>Analyzing One-way Tables</title></head>
+<body onload="pageSetup()">
+<div style="background-color: #133F2E; text-align:center; font-size:2em; color: #000099; padding-bottom: 30px; padding-top: 30px" id="pageTitle"><a href="https://www.rossmanchance.com/applets/index2021.html" style="text-decoration: none; color: white"><b>Rossman/Chance Applet Collection</b></a><br></div>
+<div style="background-color: #e6e6e6; color: black; font-size: 1em; height: 100%; overflow: auto;  width: 100%; border-bottom: solid 1px"> 
+<h2 id="appletTitle" title="Analyzing One-way Tables">Analyzing One-way Tables</h2>
+</div>
+
+<div>
+<div id="alert" class="my-alert" role="" aria-labelledby="alertHeading" aria-describedby="alertText" style="display: none;">
+		<span id="alertText"> Alert message </span>
+		<input type="button" value="Close" id="Close" onclick="hideAlert()" aria-label="Close">
+	</div><table border="0" cellpadding="5" role="presentation">
+	
+	<tbody><tr>
+		<td valign="top"><!-- row 1, column 1 -->
+				<span id="selectDataSpan"><strong>	Select data</strong>
+								<select name="selectData" id="selectData" onchange="onChangeSelectData()" tabindex="1" aria-label="Select data file">
+									<option value="" selected="">Choose</option>
+									<option value="/applets/2021/data/BirthMonths.txt">Birth months</option>
+									<option value="/applets/2021/data/DieRolls.txt">Die rolls</option>
+									<option value="/applets/2021/data/HeartAttacks.txt">Heart attacks</option>
+									<option value="/applets/2021/data/PeasGY.txt">Peas</option>
+									<option value="/applets/2021/data/FavSeasons.txt">Seasons</option>
+							</select>
+				</span>
+<br>
+			<span title="Enter raw data, with header, or a table of counts" id="t_SampleData">Paste data or table below:</span> 
+				<table border="0">
+				<tbody>
+				<tr align="left">
+					</tr>
+				<tr>
+				</tr>
+				<tr>
+					
+				</tr>
+				<tr>
+					<!-- Hack to workaround bad performance in Chrome due to spellcheck of textarea data.
+					Chrome should be respecting spellcheck=false attribute, but it does not on pasted in data.
+					Hack works around this problem, but replaces all textarea data with pasted data, even if not selected.
+					Hack does not work the same in IE -- unsure why not.
+					-->
+					<td> <textarea spellcheck="false" onpaste="this.value=event.clipboardData.getData(&#39;text/plain&#39;);return false;" style="overflow: auto; font-family: Courier;" id="dataText" rows="10" cols="0"></textarea> </td>
+				</tr>
+				<tr>
+					<td> 
+						<button title="If entered two columns of categorical data" id="btnUseData" onclick="useDataBtn()" type="button">Use Data</button> 
+						<button title="If data entered is in table format" id="btnUseTable" onclick="useTable()" type="button">Use Table</button> 
+						<br>
+						<button id="btnClearData" onclick="clearData()" type="button">Clear</button>
+					</td>
+				</tr>
+			</tbody></table>
+		</td>
+		<!-- row 1, column 2 -->
+		<td valign="top"> 
+			<table role="presentation">
+				<tbody><tr>
+					<td title="Shows sample results" id="plotTitle" valign="top"><strong>Sample Data </strong></td>
+				</tr>
+				<tr>
+					<td>
+						<canvas title="Shows sample data" id="shufflePlot" width="300" height="250"></canvas>
+					</td>
+				</tr>
+			
+			</tbody></table>
+			
+		</td>
+		<!-- row 1, column 3 -->
+		<td style="border-left: 1px solid silver; padding: 5px;" valign="top">
+			<table border="0" role="presentation">
+				<tbody>
+				<tr>
+					<td colspan="2" title="Specify probabilities in order, separated by comma" id="cellHypothesizedProbsLabel" style="display: none;">Enter hypothesized probabilities:</td>
+					<td rowspan="2" valign="top"><div id="pieDiv" style="display: none; resize:both; overflow: auto;  height:75px; width: 75px"> 
+					</div>	</td>
+
+				</tr>
+				<tr>
+					<td valign="top">
+					<textarea spellcheck="false" ;="" onchange="changeHypothesized()" onpaste="this.value=event.clipboardData.getData(&#39;text/plain&#39;);return false;" style="overflow: auto; font-family: Courier; display: none;" id="hypProbText" rows="1" cols="25"></textarea> 
+						</td><td valign="top"><button title="Set probabilities" id="setProbs" onclick="redraw()" type="button" style="display: none;">Set</button>
+					</td>
+				</tr>
+				<tr>
+					<td><span id="showAltProbsLabel" style="display: none;">Alternative</span>
+					
+					 <input title="To draw random samples from alternative population" id="showAltShuffleOptions" onclick="changeShowShuffleOptions()" type="checkbox" style="display: none;">
+					</td>
+				</tr>
+				
+				<tr>
+					<td title="Specify probabilities in order, separated by comma" id="cellAltProbs" style="display: none;">Enter alternative probabilities:</td>
+				</tr>
+				<tr>
+					<td>
+						<span id="showShuffleOptionsLabel">Show Sampling Options</span>
+						 <input title="To draw random samples from population" id="showShuffleOptions" onclick="changeShowShuffleOptions()" type="checkbox">
+					</td>
+					
+				</tr>
+				<tr>
+				<td>
+					<textarea spellcheck="false" ;="" onchange="changeShowShuffleOptions()" onpaste="this.value=event.clipboardData.getData(&#39;text/plain&#39;);return false;" style="overflow: auto; font-family: Courier; display: none;" id="altProbText" rows="1" cols="30"></textarea> 
+					</td>
+				</tr>
+				<tr>
+					<td id="cellNumberOfShuffles" style="display: none;">
+						<span id="cellNumberOfShufflesLabels">Number of Samples</span>
+						<input title="How many times do you want to randomly shuffle the values?" id="numberOfShuffles" size="3" value="1" type="text">
+					</td>	
+				</tr>
+				<tr>
+					<td id="cellShuffleData" valign="top" style="display: none;">
+						<button onclick="shuffleData()" type="button" id="ShuffleButton">Sample</button>
+						<span id="shuffleShowCardsOption" style="display: none;">
+							<input title="Shows animation of shuffling cards" id="shuffleShowCards" name="shuffleShowData" value="showCards" onclick="redraw()" type="radio"><span id="shuffleShowCardsLabel">Cards</span>
+						</span>
+						<input title="Shows two-way table of shuffled results" id="shuffleShowTable" name="shuffleShowData" value="showTable" onclick="redraw()" checked="checked" type="radio"><span id="shuffleShowTableLabel">Data</span>
+						<input title="Shows bar graph of shuffled results" id="shuffleShowPlot" name="shuffleShowData" value="showPlot" onclick="redraw()" type="radio"><span id="shuffleShowPlotLabel">Plot</span>
+					</td>
+				</tr>
+				<tr>
+					<td>
+					<span id="shuffleTitle" style="display: none;"></span><br>
+					<canvas id="simSamplePlot" width="225" height="187" style="display: none;"></canvas>
+					
+					</td>
+				</tr>
+				<tr>
+					<td id="cellShuffledDataText" tabindex="3" aria-label="scrollable table of shuffled results" style="display: none">
+											<div id="shuffledDataTextDiv" class="tableFixHead">
+												<table role="presentation"><tbody><tr>
+													<td id="shuffledDataText"><table border="0"><thead><tr><th></th></tr></thead></table></td></tr>
+												</tbody></table>
+											</div>
+										</td>
+					</tr>
+				<tr>
+					<td>
+						<table border="0">
+							<tbody><tr>
+								<td>
+									<canvas id="simCardAnimation" width="300" style="display: none;"></canvas>
+								</td>
+							</tr>
+						</tbody></table>
+					</td>
+				</tr>
+			</tbody></table>
+		</td>
+		<td valign="top">
+			<table border="0" role="presentation">
+				<tbody>
+					<tr>
+					<td id="choosestatistic2" style="vertical-align: top; display: none;">
+					<label for="scenario2">Statistic:</label>
+					<select id="scenario2" onchange="changeHistStat2()" tabindex="4">
+						<option id="showMMOption" value="MM">Max - Min</option>
+						<option id="showMeanAbsDiffOption" value="meanAbsDiff">MAD</option>
+						<option id="showChiSquaredOption" value="chiSquared">χ²</option>
+						<option id="showMinTallyOption" value="minTally">Min Tally</option>
+						<option id="showMaxTallyOption" value="maxTally">Max Tally</option>
+						<option id="showProportionOption" value="propA">Proportion</option>
+						
+						</select>
+					</td>
+				</tr>
+
+				<tr>
+				<td title="Keeps track of number of shuffles" id="cellNumberofShufflesTotal" style="display: none;">
+						Total Shuffles = 
+					</td>
+				</tr>
+				<tr>
+					<td title="Plots the statistic from the shuffled data" id="cellShuffleHistogram" valign="top" style="display: none;"> 
+						<canvas id="histogram" width="300" height="250"></canvas>
+					</td>
+				</tr>
+				<tr><td id="cellShowPrevious" style="display: none;">
+					<input id="showGhost" onclick="redraw()" type="checkbox"> <span id="showPreviousLabel">Show previous</span>
+				</td></tr>
+			</tbody></table>
+			<br>
+			<table border="0" role="presentation">
+				<tbody><tr>
+					<td title="Choose the direction(s) you want to count samples" id="cellShuffleCountSamples" style="display: none;"> <span id="cellShuffleCountSamplesLabel">Count Samples</span>
+						<!--<input id="countSamples" onclick="redraw()" type="checkbox" />-->
+				
+						<select id="countOperator" onchange="redraw()"><option id="greaterThan" value="GREATER THAN">Greater than ≥</option><option id="lessThan" value="LESS THAN">Less than ≤</option><option id="beyond" value="BEYOND">Beyond</option></select>
+						<input id="countInput" size="3" onchange="doCountSamples()" type="text">
+						<input id="t_countButton" value="Count" onclick="doCountSamples()" type="submit">
+					</td>
+				</tr>
+				<tr>
+					<td id="countSamplesOutput" style="display: none;"> </td>
+				</tr>
+				<tr>
+					<td title="Toggles display of a theory-based null distribution and p-value" id="cellTheoPvalue" style="display: none;">
+					<input id="overlayF" onclick="redraw()" type="checkbox">
+					<span id="overlayFLabel">Overlay Chi-squared distribution</span>
+					</td>
+					<td id="cellTheoPvalueZ" style="display: none;">
+					<input id="overlayZ" onclick="redraw()" type="checkbox">
+					<span id="overlayNormalLabel">Overlay normal distribution</span>
+					</td>
+
+				</tr>
+				<tr>
+					<td id="cellTheoPvalueOutput" valign="top" style="display: none;"></td>
+				</tr>
+				<tr>
+					<td id="countSamplesNotes" style="display: none;"> </td>
+				</tr>
+				
+			</tbody></table>
+		</td>
+	</tr><!-- end row 1-->
+	<tr>
+		<!-- row 2, column 1 -->
+		<td><table role="presentation"><tbody><tr><td title="Display table of counts" id="cellShowTable" valign="top">Show Table</td>
+			<td> <input id="showTable" ,="" onclick="changeShowTable()" title="Toggles display of table.  Can edit entries and then paste into Sample Data window." type="checkbox" checked="">
+		</td>
+		</tr></tbody></table></td>
+		<!-- row 2, column 2 -->	
+		<td valign="top">
+			<table border="0" role="presentation">
+				<tbody><tr>
+					<td>
+						<table id="TwowayTable" border="0" cellpadding="2">
+							<tbody><tr>
+								<td id="TableText" style=""><span class="numericoutput"><cpation style="text-align:left"></cpation><table><thead></thead><tbody><tr><th scope="col"> Outcome</th><th scope="col"> Count </th><th scope="col"> Prop.</th></tr><tr><th scope="row" align="left">Red</th><td align="center">3</td><td>0.3000</td></tr><tr><th scope="row" align="left">Blue</th><td align="center">4</td><td>0.4000</td></tr><tr><th scope="row" align="left">Green</th><td align="center">2</td><td>0.2000</td></tr><tr><th scope="row" align="left">Brown</th><td align="center">1</td><td>0.1000</td></tr><tr><th scope="row" align="left"> Total </th><td align="center">10</td></tr><tr></tr></tbody></table></span></td>
+							</tr>
+						</tbody></table>
+					</td>
+				</tr>	
+			</tbody></table>
+		</td>
+		<!-- row 2, column 3 -->
+		<td style="border-left: 1px solid silver; padding: 5px;">
+			<table id="TwowayTable" border="0" cellpadding="2" role="presentation">
+				<tbody><tr>
+					<td id="shuffledTableText" style="color: blue; display: none;"><span class="numericoutput"><cpation style="text-align:left"></cpation><table><thead></thead><tbody><tr><th scope="col"> Outcome</th><th scope="col"> Count </th><th scope="col"> Prop.</th></tr><tr><th scope="row" align="left">Red</th><td align="center">3</td><td>0.3000</td></tr><tr><th scope="row" align="left">Blue</th><td align="center">4</td><td>0.4000</td></tr><tr><th scope="row" align="left">Green</th><td align="center">2</td><td>0.2000</td></tr><tr><th scope="row" align="left">Brown</th><td align="center">1</td><td>0.1000</td></tr><tr><th scope="row" align="left"> Total </th><td align="center">10</td></tr><tr></tr></tbody></table></span></td>
+					
+				</tr>
+			</tbody></table>
+		</td>
+		<!-- row 2, column 4 -->
+		
+	</tr>
+	<tr id="rowAbsDiffChiSquared">
+		<!-- row 3, column 1 -->
+		<td valign="top">
+			<table border="0" role="presentation">
+				<tbody><tr>
+					<td id="statistic" valign="top">Statistic:</td>
+					<td title="Choose statistic you want collected from each shuffle" valign="top">
+					<select name="shuffleShow" id="scenario" onchange="changeHistStat()">
+						<option id="showMMOption" value="MM">Max - Min</option>
+						<option id="showMeanAbsDiffOption" value="meanAbsDiff">MAD</option>
+						<option id="showChiSquaredOption" value="chiSquared">χ²</option>
+						<option id="showMinTallyOption" value="minTally">Min Tally</option>
+						<option id="showMaxTallyOption" value="maxTally">Max Tally</option>
+						<option id="showProportionOption" value="propA">Proportion</option>
+						</select>
+					</td>
+				</tr>
+			</tbody></table>
+		</td>
+		<!-- row 3, column 2 -->
+		<td valign="top"> 
+			<table role="presentation">
+				<tbody><tr>
+					<td id="diff" title="This is the difference in conditional proportions of success." valign="top">
+					</td>
+				</tr>				
+				<tr>
+					<td id="meanAbsDiff" title="This is the sum of the absolute values of all  differences between observed and expected counts." valign="top" style="display: none;">Observed MAD = 1.000</td>
+				</tr>
+				<tr>				
+					<td id="chiSquared" title="This is the Chi-squared test statistic for the original data." valign="top" style="display: none;">Observed χ² = 2.000<br> (hypothesized:0.250,0.250,0.250,0.250)</td>			
+				</tr>
+				<tr>
+					<td id="MM" title="This is the largest group proportion minus the smallest group proportion." valign="top" style="">Observed Max - Min = 0.300</td>
+				</tr>
+				<tr>
+					<td id="maxTally" title="This is the largest group count." valign="top" style="display: none;">Observed Max Tally = 4</td>
+				</tr>
+				<tr>
+					<td id="minTally" title="This is the smallest group count." valign="top" style="display: none;">Observed Min Tally = 1</td>
+				</tr>
+				<tr>
+					<td id="propA" title="This is the proportion in group A." valign="top" style="display: none;">Observed Proportion Red = 0.300</td>
+				</tr>
+
+			</tbody></table>
+		</td>	
+		<!-- row 3, column 3 -->
+		<td style="border-left: 1px solid silver; padding: 5px;" valign="top"><table>
+			</table><table role="presentation">
+				<tbody><tr>
+					<td id="simDiff"> 
+					</td>
+				</tr>
+				<tr>
+					<td id="simMeanAbsDiff" style="display: none;"><font color="blue">Most Recent Sample MAD = 1.000</font></td>
+				</tr>
+				<tr>
+					<td id="simChiSquared" style="display: none;"><font color="blue">Most Recent Sample χ² = 2.00</font></td>
+				</tr>
+				<tr>
+					<td id="simMM" style="display: none;">
+					</td>
+				</tr>
+				<tr>
+					<td id="simMaxTally" style="display: none;">
+					</td>
+				</tr>
+				<tr>
+					<td id="simMinTally" style="display: none;">
+					</td>
+				</tr>
+				<tr>
+					<td id="simXcount">
+					</td>
+				</tr>
+				<tr>
+					<td id="simPropA" style="display: none;">
+					</td>
+				</tr>
+					
+			</tbody></table>
+		</td>		
+		<!-- row 3, column 4 -->
+		<td>
+		</td>
+	</tr>
+	<tr id="rowShowChiSqOutput">
+		<!-- row 5, column 1 -->
+		<td valign="top">
+			<table role="presentation">
+				<tbody><tr>
+					<td id="cellShowChisqOutput">Show χ² output</td>
+					<td>
+						<input title="Displays cell contributions, df, and p-value for observed data. Specify hypothesized probabilities first" id="showChisq" onclick="changeShowChisq()" type="checkbox" tabindex="1">
+					</td>
+					</tr>
+				</tbody>
+			</table>
+		</td>
+		
+		<!-- row 5, column 2 -->
+		<td>
+			<table role="presentation">
+				<tbody><tr>
+					<td>
+					<textarea id="showChisqText" style="display: none;"></textarea>
+					</td>
+				</tr>
+				<tr>
+				<td tabindex="1" id="cellChisqOutputTable" style="display: none">Chisq Cell Contributions<span class="numericoutput"><table><caption style="text-align: left"></caption><thead><tr><th>&nbsp;</th><th scope="col">Red</th><th scope="col">Blue</th><th scope="col">Green</th><th scope="col">Brown</th><th scope="col">Total</th></tr></thead><tbody><tr><th scope="row" class="th-inner">Observed</th><td align="center">3</td><td align="center">4</td><td align="center">2</td><td align="center">1</td><td>10</td></tr><tr><th scope="row" class="th-inner">Expected</th><td>2.50</td><td>2.50</td><td>2.50</td><td>2.50</td></tr></tbody></table></span><span class="numericoutput">Sum = 2.000<br>df = 3<br>p-value = 0.5724</span></td>
+					</tr>
+					</tbody></table>
+		</td>
+					
+		<!-- row 5, column 3 -->
+		<td id="showChidensity" align="top" style="display: none;  padding: 5px;"><br>
+			<canvas id="densityPlot" width="200" height="200" role="img" aria-label="graph of Chi-squared distribution" tabindex="1"></canvas>
+		</td>
+
+		<td style="border-left: 1px solid silver; padding: 5px;">
+			<table border="0" role="presentation">
+				<tbody><tr>
+					<td id="shuffledcellChisqOutputTable" style="color: blue; display:none;" tabindex="3"><span>Most Recent Shuffled χ² Output</span> <span class="numericoutput"><table><caption style="text-align:left"></caption><thead><tr><th></th><th scope="col">Red</th><th scope="col">Blue</th><th scope="col">Green</th><th scope="col">Brown</th><th scope="col">Total</th></tr></thead><tbody><tr><th scope="row" class="th-inner">Observed</th><td align="center">3</td><td align="center">4</td><td align="center">2</td><td align="center">1</td><td>10</td></tr><tr><th scope="row" class="th-inner">Expected</th><td>2.50</td><td>2.50</td><td>2.50</td><td>2.50</td></tr></tbody></table></span><span class="numericoutput">Sum = 2.000<br>df = 3<br>p-value = 0.5724</span></td>
+				</tr>
+			</tbody></table>
+		</td>
+	</tr>
+
+	<tr>
+		<td valign="top">
+			<table role="presentation"> <tbody><tr>
+					<td title="Displays theory-based confidence interval" id="cellCIs" style="display: none;"> 
+					<input id="computeCIs" onclick="redraw()" type="checkbox">
+					<span id="cibox"></span>
+					</td>
+					</tr>
+					<tr>
+					</tr>
+
+			</tbody></table>
+		</td>	
+		<td id="CIOutput" valign="top" style="display: none;"></td>	
+	</tr>
+				
+</tbody></table>
+
+<br>
+
+
+<div id="notes" style="background-color: #e6e6e6; color: black; font-size: 1em; height: 100%; overflow: auto;  width: 100%; border-bottom: solid 1px"> 
+<br>
+<input type="button" value="User Notes" id="UserNotes" onclick="changeNotes()" tabindex="4" aria-label="Press button for notes on applet use">
+<div id="UserNotesText" style="display: none" tabindex="4"></div>
+<br>
+<div id="about" tabindex="4" style="color:#133F2E; font-size: 9px"> 
+<p id="pageLastModified">Page last modified 05/03/2024 16:59:58<br> Copyright (c) 2012-2020 Beth and Frank Chance. <br>Duplication without the written permission of Beth and Frank Chance prohibited by federal law.</p>
+</div>
+
+<p id="MovingChartXY"></p>
+</div>
+</div>
+</body></html>

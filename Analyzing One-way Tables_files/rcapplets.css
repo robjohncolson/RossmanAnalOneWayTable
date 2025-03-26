@@ -1,0 +1,176 @@
+body {
+    font-family: Roboto, sans-serif;
+}
+
+h1{
+	text-decoration: none; 
+	color: white;
+	font-size:1em; 
+	padding-bottom: 0px; 
+	padding-top: 0px
+}
+/* formatting links*/
+a {
+text-decoration: none;
+}
+a:link {
+color: #000099;
+/*border-bottom: 1px solid #ff0000 */
+}
+a:visited {
+color: #000099;
+border-bottom: 1px solid #b3b3b3;
+}
+a:hover {
+color: #CC0030;
+border-bottom: 1px solid #000099;
+}
+a:focus {
+color: #267347;
+border-bottom: 1px solid #000099;
+}
+
+.numericoutput {
+	font-family: monospace;
+	font-size: 15px;
+	word-spacing: 1px;
+/*	inline-size: min-content;*/
+/*	overflow: auto;
+	resize: both*/
+/*	padding: 40px 50px 0px 0px;*/
+}
+
+.ui-slider {
+	border: solid 1px;
+}
+
+.ui-slider-handle{
+	border-color: black !important;
+}
+h4{
+	margin:0px;
+	padding: 0px
+}
+
+ .tableFixHead {
+        overflow-y: auto;
+        height: 156px;
+		font-family: monospace;
+		font-size: 12px;
+		border: 1px solid #ccc;
+      }
+ .tableFixHead thead th {
+        position: sticky;
+        top: 0;
+		text-align: left;
+/*		 padding: 8px 16px;*/
+/*        border: 1px solid #ccc;*/
+		  background: #eee;
+ }
+  .tableFixHead tbody td {
+		text-align: left;
+/*		 padding: 8px 16px;*/
+/*        border: 1px solid #ccc;*/
+ }
+  .tableFixHead  table {
+        border-collapse: collapse;
+        width: 100%;
+      }
+	  .tableFixHead    td {
+/*        padding: 8px 16px;
+        border: 1px solid #ccc;*/
+      }
+
+.my-alert{
+	color: #B80000;
+	background-color: lightblue;
+	text-align: center;
+	padding-top: 5px;
+	padding-bottom: 5px;
+}
+
+.my-description{
+	color: black;
+	background-color: #D1F8D1;
+	text-align: left;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	border-bottom: 2px;
+}
+
+.visually-hidden {
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
+.sr-only {
+position:absolute;
+left:-10000px;
+top:auto;
+width:1px;
+height:1px;
+overflow:hidden;
+}
+
+/* Styling for variable lists. Increase min-height so there is space to "drop" a variable on an empty list. */
+#varList, #responseVarList, #explanatoryVarList, #subsetVarList {
+  border: 1px solid #eee;
+  width: 100px;
+    min-height: 50px;
+    list-style-type: none;
+    margin: 0;
+    padding: 5px 0 0 0;
+    float: left;
+    margin-right: 10px;
+	
+}
+
+#varList li, #responseVarList li, #explanatoryVarList li, #subsetVarList li {
+    margin: 0 5px 5px 5px;
+    padding: 5px;
+    font-size: 0.8em;
+    width: 78px;
+    border: 1px solid #c5c5c5;
+    background: #f6f6f6;
+	/*width: min-content*/
+}
+
+/* Pull value for listlabel attribute to top of UL and make it a title for the list. */
+ul:before{
+    content:attr(listlabel);
+    margin-left:5px;
+}
+
+[role="tooltip"] {
+  display: none;
+}
+[role="tooltipR"] {
+  display: none;
+}
+input:hover + [role="tooltip"],  
+input:focus + [role="tooltip"] {  
+  display: block;
+}
+
+input:hover + [role="tooltipR"],  
+input:focus + [role="tooltipR"] {  
+  display: block;
+}
+.input-and-tooltip {
+  position: relative;
+}
+
+
+[role="tooltip"] {
+  position: absolute;
+  /* left/top/right/bottom values as required */
+}
+[role="tooltipR"] {
+  position: right;
+  /* left/top/right/bottom values as required */
+}
