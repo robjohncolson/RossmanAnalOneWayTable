@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Chi-Square Goodness-of-Fit Test Simulator</title>
+    <title>Unit 8.2: Setting Up a Chi-Square Goodness of Fit Test</title>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <style>
         body {
@@ -27,6 +27,24 @@
             border-radius: 5px;
             box-shadow: 0 0 5px rgba(0,0,0,0.1);
         }
+        .educational-section {
+            background: #e8f4f8;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border-left: 4px solid #2196F3;
+        }
+        .steps-section {
+            background: #fff3e0;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .step {
+            margin: 10px 0;
+            padding: 5px;
+            border-bottom: 1px solid #ddd;
+        }
         table {
             border-collapse: collapse;
             width: 100%;
@@ -38,7 +56,7 @@
             text-align: left;
         }
         button {
-            background: #4CAF50;
+            background: #2196F3;
             color: white;
             padding: 10px 20px;
             border: none;
@@ -47,38 +65,106 @@
             margin: 10px 0;
         }
         button:hover {
-            background: #45a049;
+            background: #1976D2;
+        }
+        .input-mode {
+            margin: 20px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .input-mode label {
+            margin-right: 15px;
+        }
+        #directChiSquareInput {
+            display: none;
+            margin: 10px 0;
+        }
+        #countInputSection {
+            display: block;
+        }
+        .formula {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: "Courier New", monospace;
+            margin: 10px 0;
         }
     </style>
 </head>
 <body>
-    <h1>Chi-Square Goodness-of-Fit Test Simulator</h1>
+    <h1>Unit 8.2: Setting Up a Chi-Square Goodness of Fit Test</h1>
     
+    <div class="educational-section">
+        <h2>Learning Objectives</h2>
+        <p>In this unit, we learn how to:</p>
+        <ul>
+            <li>Set up and conduct a chi-square goodness-of-fit test</li>
+            <li>Compare observed data to expected proportions</li>
+            <li>Use simulation to understand sampling distributions</li>
+            <li>Interpret p-values in context</li>
+        </ul>
+
+        <div class="formula">
+            <h3>Chi-Square Statistic Formula:</h3>
+            <p>χ² = Σ (Observed - Expected)²/Expected</p>
+        </div>
+    </div>
+
+    <div class="steps-section">
+        <h3>Steps in Conducting a Chi-Square Test:</h3>
+        <div class="step">1. State hypotheses about population proportions</div>
+        <div class="step">2. Calculate expected counts using null hypothesis proportions</div>
+        <div class="step">3. Calculate the chi-square statistic</div>
+        <div class="step">4. Find the p-value using simulation</div>
+        <div class="step">5. Draw conclusions in context</div>
+    </div>
+
     <div class="container">
         <div class="input-section">
-            <h2>Data Input</h2>
-            <table id="dataTable">
-                <tr>
-                    <th>Income Bracket</th>
-                    <th>Expected Proportion</th>
-                    <th>Observed Count</th>
-                </tr>
-                <tr>
-                    <td>High</td>
-                    <td><input type="number" step="0.001" value="0.452" id="prop1"></td>
-                    <td><input type="number" id="obs1"></td>
-                </tr>
-                <tr>
-                    <td>Medium</td>
-                    <td><input type="number" step="0.001" value="0.292" id="prop2"></td>
-                    <td><input type="number" id="obs2"></td>
-                </tr>
-                <tr>
-                    <td>Low</td>
-                    <td><input type="number" step="0.001" value="0.256" id="prop3"></td>
-                    <td><input type="number" id="obs3"></td>
-                </tr>
-            </table>
+            <h2>Example: Predatory Lending Across Income Brackets</h2>
+            <p>Testing if predatory lending targets are distributed according to population income proportions.</p>
+            
+            <div class="input-mode">
+                <label>
+                    <input type="radio" name="inputMode" value="counts" checked onchange="toggleInputMode()">
+                    Enter Observed Counts
+                </label>
+                <label>
+                    <input type="radio" name="inputMode" value="chiSquare" onchange="toggleInputMode()">
+                    Enter Chi-Square Value Directly
+                </label>
+            </div>
+
+            <div id="countInputSection">
+                <table id="dataTable">
+                    <tr>
+                        <th>Income Bracket</th>
+                        <th>Expected Proportion (H₀)</th>
+                        <th>Observed Count</th>
+                    </tr>
+                    <tr>
+                        <td>High Income</td>
+                        <td><input type="number" step="0.001" value="0.452" id="prop1"></td>
+                        <td><input type="number" id="obs1"></td>
+                    </tr>
+                    <tr>
+                        <td>Medium Income</td>
+                        <td><input type="number" step="0.001" value="0.292" id="prop2"></td>
+                        <td><input type="number" id="obs2"></td>
+                    </tr>
+                    <tr>
+                        <td>Low Income</td>
+                        <td><input type="number" step="0.001" value="0.256" id="prop3"></td>
+                        <td><input type="number" id="obs3"></td>
+                    </tr>
+                </table>
+            </div>
+
+            <div id="directChiSquareInput">
+                <label for="chiSquareValue">Chi-Square Value:</label>
+                <input type="number" step="0.001" id="chiSquareValue">
+            </div>
 
             <div>
                 <label for="sampleSize">Sample Size:</label>
@@ -94,6 +180,7 @@
                 <h3>Results:</h3>
                 <p id="observedChiSquare"></p>
                 <p id="pValue"></p>
+                <div id="interpretation"></div>
             </div>
         </div>
 
@@ -103,6 +190,12 @@
     </div>
 
     <script>
+        function toggleInputMode() {
+            const mode = document.querySelector('input[name="inputMode"]:checked').value;
+            document.getElementById('countInputSection').style.display = mode === 'counts' ? 'block' : 'none';
+            document.getElementById('directChiSquareInput').style.display = mode === 'chiSquare' ? 'block' : 'none';
+        }
+
         function calculateChiSquare(observed, expected) {
             return observed.reduce((sum, obs, i) => {
                 return sum + Math.pow(obs - expected[i], 2) / expected[i];
@@ -126,28 +219,35 @@
         }
 
         function runSimulation() {
-            // Get input values
-            const proportions = [
-                parseFloat(document.getElementById('prop1').value),
-                parseFloat(document.getElementById('prop2').value),
-                parseFloat(document.getElementById('prop3').value)
-            ];
-            
-            const observed = [
-                parseInt(document.getElementById('obs1').value),
-                parseInt(document.getElementById('obs2').value),
-                parseInt(document.getElementById('obs3').value)
-            ];
-
+            const mode = document.querySelector('input[name="inputMode"]:checked').value;
             const sampleSize = parseInt(document.getElementById('sampleSize').value);
             const numSimulations = parseInt(document.getElementById('numSimulations').value);
+            
+            let observedChiSquare;
+            let expected;
+            let proportions;
 
-            // Calculate expected counts
-            const expected = proportions.map(p => p * sampleSize);
-            
-            // Calculate observed chi-square
-            const observedChiSquare = calculateChiSquare(observed, expected);
-            
+            if (mode === 'counts') {
+                proportions = [
+                    parseFloat(document.getElementById('prop1').value),
+                    parseFloat(document.getElementById('prop2').value),
+                    parseFloat(document.getElementById('prop3').value)
+                ];
+                
+                const observed = [
+                    parseInt(document.getElementById('obs1').value),
+                    parseInt(document.getElementById('obs2').value),
+                    parseInt(document.getElementById('obs3').value)
+                ];
+
+                expected = proportions.map(p => p * sampleSize);
+                observedChiSquare = calculateChiSquare(observed, expected);
+            } else {
+                observedChiSquare = parseFloat(document.getElementById('chiSquareValue').value);
+                proportions = [0.452, 0.292, 0.256]; // Default proportions for simulation
+                expected = proportions.map(p => p * sampleSize);
+            }
+
             // Run simulations
             const chiSquareStats = [];
             for (let i = 0; i < numSimulations; i++) {
@@ -165,6 +265,17 @@
             document.getElementById('pValue').textContent = 
                 `Simulated P-value: ${pValue.toFixed(3)} (${Math.round(pValue * numSimulations)} out of ${numSimulations})`;
 
+            // Add interpretation
+            let interpretation = "";
+            if (pValue < 0.05) {
+                interpretation = "Since p < 0.05, we have evidence to reject the null hypothesis. " +
+                    "The distribution of predatory lending appears to differ significantly from the population income distribution.";
+            } else {
+                interpretation = "Since p ≥ 0.05, we do not have sufficient evidence to reject the null hypothesis. " +
+                    "The data is consistent with the population income distribution.";
+            }
+            document.getElementById('interpretation').innerHTML = `<p><strong>Interpretation:</strong> ${interpretation}</p>`;
+
             // Create histogram
             const trace = {
                 x: chiSquareStats,
@@ -174,7 +285,7 @@
             };
 
             const layout = {
-                title: 'Distribution of Simulated Chi-Square Statistics',
+                title: 'Sampling Distribution of Chi-Square Statistics Under H₀',
                 xaxis: { title: 'Chi-Square Statistic' },
                 yaxis: { title: 'Frequency' },
                 shapes: [{
@@ -189,6 +300,17 @@
                         width: 2,
                         dash: 'dash'
                     }
+                }],
+                annotations: [{
+                    x: observedChiSquare,
+                    y: 1,
+                    xref: 'x',
+                    yref: 'paper',
+                    text: 'Observed χ²',
+                    showarrow: true,
+                    arrowhead: 2,
+                    ax: 0,
+                    ay: -40
                 }]
             };
 
