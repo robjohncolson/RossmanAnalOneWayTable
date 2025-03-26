@@ -1,0 +1,74 @@
+Got it, I’ll keep it tight! In the video, the instructor used a chi-square goodness-of-fit test for predatory lending across three income brackets. She set expected counts with proportions 0.452, 0.292, and 0.256, reflecting the population’s income distribution, not an equal 0.33 split. For 100 households, that’d be 45.2, 29.2, and 25.6 expected loans per bracket. This tests if the actual loan counts match this distribution, hinting at unfair targeting if they don’t. What stood out to you about her approach?
+
+
+
+
+
+
+So, the (obs - exp)^2 / exp is called "contributions", it turns out.
+
+
+Yep, exactly! Those 
+(
+𝑂
+−
+𝐸
+)
+2
+𝐸
+E
+(O−E) 
+2
+ 
+​
+  terms are called "contributions" because each one shows how much that category adds to the overall chi-square statistic. The bigger the difference between observed (O) and expected (E), the larger the contribution. It’s like each category pitches in its share to tell you if the distributions don’t match. Did she calculate those contributions in the video? What did you think about that part?
+
+
+
+
+
+
+She summed up the contributions..which became the chi square at 7.746... extremem right?  THis due to fact that few of the "predatory" lending businesses are in rich areas.. but is it?
+
+
+Yeah, she summed the contributions to get the chi-square statistic, 7.746, which sounds right! That value being on the "extreme right" likely means it’s in the tail of the chi-square distribution, suggesting a significant result. If fewer predatory loans were in rich areas (high-income bracket) than expected, that mismatch boosts the contributions. It could imply predatory lending targets lower-income areas more, which aligns with the data skewing the statistic. Did she compare 7.746 to a critical value or p-value next? What did that reveal?
+
+
+
+
+
+
+Well here, she emphasizes that chi-square dists are based on "degrees of freedom" or number of categories rather than sample size.
+
+
+That’s a key point! The chi-square distribution depends on degrees of freedom (df), which is the number of categories minus 1, not the sample size. For three income brackets, df = 3 - 1 = 2, shaping the curve she used to assess 7.746. Sample size affects expected counts, but df determines the distribution’s form. Did she show how df = 2 fits with that 7.746 value? What did you make of that?
+
+
+
+
+
+
+Well before this, she talks of simulating drawing random sample of size 40 from a population where hte prop of predatory lending is the same as the prop of households.. (null hypothesis).  
+
+
+Cool, so she simulated drawing a random sample of 40 households under the null hypothesis, where the proportion of predatory loans matches the household proportions (0.452, 0.292, 0.256). That’s a smart way to show what “no difference” looks like—expected counts would be 40 × those proportions (18.08, 11.68, 10.24). She’s setting up a baseline to compare against the real data. Did she use that simulation to explain why 7.746 matters? How did it tie in?
+
+
+
+
+
+
+she's using rossman chance applet collection to definethe null hyhpo values and use the chi-square model to generate simulated values (if the proportions are accoriding to null hypothetical values...0.452, etc).... generating random samples of 40.. and then generating a histogram of the chi-square statistic of each of these synthetically generated samples...
+
+
+That’s awesome—she’s using the Rossman/Chance applet to simulate the null hypothesis with proportions 0.452, 0.292, 0.256 for samples of 40. Expected counts are 18.08, 11.68, 10.24, and she generates chi-square stats for tons of synthetic samples. The histogram shows the distribution of those stats under the null, with df = 2. It lets you see where 7.746 falls—likely far right, suggesting it’s unusual. Did she point out how rare 7.746 was in that histogram? What clicked for you there?
+
+
+
+
+
+
+only 22/1000 samples of 40 had a x2 statistics of 7.746 or higher...
+
+
+Nice catch! So, only 22 out of 1000 simulated samples had a chi-square statistic of 7.746 or higher, meaning the p-value is about 0.022. That’s pretty low—below 0.05—suggesting the null (proportions matching 0.452, 0.292, 0.256) is unlikely. It hints predatory lending doesn’t follow the household distribution, maybe hitting lower-income areas harder. Did she say what that p-value meant for the conclusion? How did that land with you?
